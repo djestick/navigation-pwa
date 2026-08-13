@@ -1,0 +1,92 @@
+---
+interface Props {
+	prefix: string;
+}
+
+const { prefix } = Astro.props;
+---
+
+<div class="profile-fields">
+	<label>
+		<span>Direct QR image URL</span>
+		<input name="qrUrl" type="text" inputmode="url" placeholder="https://example.com/qr.png" pattern=".*\.[A-Za-z0-9]+$" />
+		<small>The value must end with a file extension, for example .png</small>
+	</label>
+
+	<label>
+		<span>Security photo URL</span>
+		<input name="securityPhotoUrl" type="url" inputmode="url" placeholder="https://example.com/photo.jpg" />
+		<small>The photo is also shown between the passenger details and CIV.</small>
+	</label>
+
+	{prefix === 'settings' && (
+		<label class="toggle-field">
+			<span>
+				<strong>Show photo on security design</strong>
+				<small>The inline photo remains visible.</small>
+			</span>
+			<input name="canvasPhotoEnabled" type="checkbox" role="switch" checked />
+		</label>
+	)}
+
+	<label>
+		<span>Valid from</span>
+		<input name="validFrom" type="date" />
+	</label>
+
+	<label>
+		<span>Valid until</span>
+		<input name="validUntil" type="date" />
+	</label>
+
+	<div class="field-pair">
+		<label>
+			<span>First name</span>
+			<input name="firstName" type="text" autocomplete="given-name" />
+		</label>
+		<label>
+			<span>Last name</span>
+			<input name="lastName" type="text" autocomplete="family-name" />
+		</label>
+	</div>
+
+	<label>
+		<span>Customer ID</span>
+		<input name="customerId" type="text" inputmode="numeric" />
+	</label>
+
+	<label>
+		<span>Date of birth</span>
+		<input name="birthDate" type="date" autocomplete="bday" />
+	</label>
+
+	<label>
+		<span>CIV</span>
+		<input name="civ" type="text" />
+	</label>
+
+	<label>
+		<span>Purchased</span>
+		<input name="purchasedAt" type="datetime-local" />
+	</label>
+
+	<label>
+		<span>Position</span>
+		<input name="position" type="text" />
+	</label>
+
+	<label>
+		<span>Order number</span>
+		<input name="orderNumber" type="text" inputmode="numeric" pattern="[0-9]*" />
+	</label>
+
+	<label>
+		<span>Price</span>
+		<input name="price" type="text" inputmode="decimal" pattern="[0-9]*([,.][0-9]{1,2})?" />
+	</label>
+
+	<label>
+		<span>Ticket code</span>
+		<input name="ticketCode" type="text" />
+	</label>
+</div>

@@ -1,17 +1,1528 @@
 ---
-
+import SectionHeader from '../components/SectionHeader.astro';
+import TicketDetail from '../components/TicketDetail.astro';
+import AuthGate from '../components/AuthGate.astro';
+import SettingsPanel from '../components/SettingsPanel.astro';
 ---
-
+<!doctype html>
 <html lang="en">
 	<head>
 		<meta charset="utf-8" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
+		<link rel="manifest" href="/manifest.webmanifest" />
+		<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+		<link rel="apple-touch-startup-image" media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/apple-startup/launch-1290x2796.png" />
+		<link rel="apple-touch-startup-image" media="(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/apple-startup/launch-1284x2778.png" />
+		<link rel="apple-touch-startup-image" media="(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/apple-startup/launch-1179x2556.png" />
+		<link rel="apple-touch-startup-image" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/apple-startup/launch-1170x2532.png" />
+		<link rel="apple-touch-startup-image" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/apple-startup/launch-1125x2436.png" />
+		<link rel="apple-touch-startup-image" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/apple-startup/launch-828x1792.png" />
+		<link rel="apple-touch-startup-image" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/apple-startup/launch-750x1334.png" />
+		<meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+		<meta id="theme-color" name="theme-color" content="#292c38" />
+		<meta name="color-scheme" content="dark" />
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-title" content="DB Navigator" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+		<meta name="format-detection" content="telephone=no" />
 		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
+		<title>DB Navigator</title>
 	</head>
 	<body>
-		<h1>Astro</h1>
+		<svg class="svg-defs" aria-hidden="true">
+			<symbol id="i-route" viewBox="0 0 32 32"><path d="M6 6h10a4 4 0 0 1 0 8H9m0 0 4-4m-4 4 4 4m13 8H16a4 4 0 0 1 0-8h7m0 0-4-4m4 4-4 4"/></symbol>
+			<symbol id="i-pin" viewBox="0 0 32 32"><path d="M16 27s8-8.2 8-15a8 8 0 1 0-16 0c0 6.8 8 15 8 15Z"/><circle cx="16" cy="12" r="2.5"/><path d="M10 29h12"/></symbol>
+			<symbol id="i-ticket" viewBox="0 0 32 32"><path d="M5 9h22v5a3 3 0 0 0 0 6v5H5v-5a3 3 0 0 0 0-6V9Z"/><path d="M11 14h2m3 0h2m3 0h2"/></symbol>
+			<symbol id="i-profile" viewBox="0 0 32 32"><rect x="5" y="7" width="22" height="19" rx="1"/><circle cx="16" cy="14" r="3"/><path d="M10 23c1.2-4.7 10.8-4.7 12 0"/></symbol>
+			<symbol id="i-calendar" viewBox="0 0 32 32"><rect x="6" y="8" width="20" height="18" rx="1"/><path d="M10 5v6m12-6v6M6 14h20"/></symbol>
+			<symbol id="i-user" viewBox="0 0 32 32"><circle cx="16" cy="9" r="4"/><path d="M8 27v-6c0-5 16-5 16 0v6"/></symbol>
+			<symbol id="i-sliders" viewBox="0 0 32 32"><path d="M4 8h24M4 16h24M4 24h24"/><circle cx="11" cy="8" r="3"/><circle cx="21" cy="16" r="3"/><circle cx="14" cy="24" r="3"/></symbol>
+			<symbol id="i-search" viewBox="0 0 32 32"><circle cx="14" cy="14" r="8"/><path d="m20 20 7 7"/></symbol>
+			<symbol id="i-star" viewBox="0 0 32 32"><path d="m16 3 4 8 9 1-6.5 6.5 1.5 9L16 23l-8 4.5 1.5-9L3 12l9-1 4-8Z"/></symbol>
+			<symbol id="i-chevron" viewBox="0 0 32 32"><path d="m12 6 10 10-10 10"/></symbol>
+			<symbol id="i-plus" viewBox="0 0 32 32"><path d="M16 5v22M5 16h22"/></symbol>
+			<symbol id="i-location" viewBox="0 0 32 32"><path d="m26 5-9 22-3-9-9-3 21-10Z"/></symbol>
+		</svg>
+
+		<div class="app-shell">
+			<div class="system-safe-area" aria-hidden="true"></div>
+
+			<main>
+				<section class="screen active" data-screen="booking">
+					<div class="booking-top">
+						<button class="journey-type">Single journey</button>
+						<div class="route-fields">
+							<div>Bahnhof/ZOB, Hameln</div>
+							<div>Hannover Hbf</div>
+							<button class="swap" aria-label="Swap origin and destination"><img src="/icons/route-swap.svg" alt="" /></button>
+						</div>
+						<div class="options">
+							<div><svg><use href="#i-calendar"/></svg><span>Date</span><strong id="arrival-time">Arr | Today, --:--</strong><svg><use href="#i-chevron"/></svg></div>
+							<div><svg><use href="#i-user"/></svg><span>Passengers, bicycles</span><strong>1 pers. | 2nd Cl.</strong><svg><use href="#i-chevron"/></svg></div>
+							<div><img class="option-icon" src="/icons/transport-options.svg" alt="" /><span>Options</span><strong>Means of transport: All</strong><svg><use href="#i-chevron"/></svg></div>
+							<div><img class="option-icon fastest" src="/icons/fastest-connections.png" alt="" /><span>Show fastest connections<small>What does that mean?</small></span><strong>Active</strong><svg><use href="#i-chevron"/></svg></div>
+						</div>
+						<button class="search-button">Search</button>
+					</div>
+					<div class="content">
+						<SectionHeader title="My favourites" />
+						<div class="mini-card"><svg class="star"><use href="#i-star"/></svg><strong>Bad Pyrmont</strong></div>
+						<div class="dots"><b></b><i></i><i></i><i></i><i></i></div>
+
+						<SectionHeader title="Tickets & offers" />
+						<div class="feature-card">
+							<img class="card-art" src="/icons/bahncard.svg" alt="" />
+							<div><h3>BahnCard</h3><p>Find the right BahnCard here.</p></div>
+						</div>
+						<div class="dots"><i></i><b></b><i></i><i></i></div>
+
+						<SectionHeader title="Feedback & news" />
+						<div class="feature-card">
+							<img class="card-art" src="/icons/construction.svg" alt="" />
+							<div><h3>Baustellen der DB</h3><p>Informieren Sie sich über die Baustellen im Fern- und Nahverkehr</p></div>
+						</div>
+						<div class="dots"><i></i><b></b><i></i></div>
+					</div>
+				</section>
+
+				<section class="screen nearby-screen" data-screen="nearby">
+					<button class="map-search" aria-label="Search stop or station">
+						<span>Search stop, station</span>
+						<svg><use href="#i-search"/></svg>
+					</button>
+					<div class="map-consent">
+						<h1>Activate map</h1>
+						<div class="consent-accent"></div>
+						<p>We need your consent to activate the map service in order to display your location on the map and stops and sharing services nearby. Afterwards, we transmit the necessary positional data to the Apple Maps service of Apple Inc.</p>
+						<p>Your consent will also apply to future uses of the map function as long as you do not deactivate the display of the map in the app settings. You can withdraw your consent at any time in the app settings.</p>
+						<button class="more-information"><span>›</span> More information</button>
+						<button class="agree-button">Agree</button>
+					</div>
+					<div class="transport-drawer">
+						<div class="grabber"></div>
+						<div class="transport-tabs">
+							<span class="selected"><img src="/icons/public-transport.png" alt="" />Public tran...</span>
+							<span><img src="/icons/bike.png" alt="" />Bike</span>
+							<span><img src="/icons/scooter.png" alt="" />Scooter</span>
+						</div>
+					</div>
+				</section>
+
+				<section class="screen" data-screen="journeys">
+					<header class="title-row">
+						<button class="header-icon" aria-label="Journey filters"><img src="/icons/transport-options.svg" alt="" /></button>
+						<h1>Journeys</h1>
+						<button class="header-icon plus" aria-label="Add journey"><img src="/icons/journeys-plus.svg" alt="" /></button>
+					</header>
+					<div class="journeys-initial">
+						<div class="journeys-empty">
+							<div class="empty-art" aria-hidden="true">
+								<img src="/icons/no-trips.png" alt="" />
+								<i></i>
+							</div>
+							<h2>No trips exist</h2>
+							<p>No tickets have been purchased or trips bookmarked.</p>
+							<button class="refresh-button">Refresh</button>
+						</div>
+						<div class="previous-trips">
+							<h2>Previous trips</h2>
+							<button>Tickets and trips</button>
+						</div>
+					</div>
+					<div class="journeys-loading" aria-label="Loading journeys"><span class="ios-spinner"></span></div>
+					<div class="journeys-loaded content">
+						<h2>BahnCards, season tickets & subscriptions</h2>
+						<div class="ticket-card" role="button" tabindex="0" aria-label="Open Deutschland-Ticket">
+							<div class="ticket-head"><img class="ticket-db-logo" src="/icons/db-logo.svg" alt="DB" /><img class="ticket-qr" src="/icons/journey-qr.svg" alt="" /><h3>Deutschland-Ticket DTV, 2nd Cl.</h3></div>
+							<div class="ticket-info">
+								<p><img src="/icons/journey-map.svg" alt="" /><span>deutschlandweit</span></p>
+								<p><img src="/icons/journey-calendar.svg" alt="" /><span data-ticket-card-valid-from></span></p>
+								<p><img src="/icons/journey-ticket-info.svg" alt="" /><span>Aktuelle Ticketgültigkeit siehe Ticket.<br/>Aktualisierung automatisch zum Monatswechsel.</span></p>
+							</div>
+						</div>
+						<hr/>
+						<h2>Repeat journeys</h2>
+						<div class="repeat-card">
+							<label>Paused</label><b>Schulzentrum West, Hameln -<br/>Dortmund Hbf</b>
+							<p><img src="/icons/journey-bell.svg" alt="" />Tue</p><p><img src="/icons/journey-time.svg" alt="" />12:50 - 16:05</p><button class="toggle" aria-label="Enable repeat journey"></button>
+						</div>
+						<hr/>
+						<h2>Previous trips</h2>
+						<div class="previous">Previous and cancelled journeys, BahnCards, season tickets & subscriptions</div>
+					</div>
+				</section>
+
+				<section class="screen" data-screen="profile">
+					<header class="title-row profile-title"><span></span><h1>Profile</h1><span></span></header>
+					<div class="content profile-content">
+						<SectionHeader title="Personal details" more />
+						<div class="info-card"><img class="info-icon" src="/icons/personal.svg" alt="" /><div><b data-profile-name></b><span data-profile-customer-id></span></div></div>
+
+						<SectionHeader title="Login & security" more />
+						<div class="info-card"><img class="info-icon" src="/icons/login-security.svg" alt="" /><div><b data-profile-email></b></div></div>
+
+						<SectionHeader title="Means of payment" more />
+						<div class="info-card"><img class="info-icon" src="/icons/payment.svg" alt="" /><div><b data-profile-payment></b><span data-profile-payment-name></span></div></div>
+
+						<SectionHeader title="Subscriptions and credits" />
+						<div class="feature-card">
+							<img class="card-art" src="/icons/manage-subscriptions.svg" alt="" />
+							<div><h3>Manage subscriptions</h3><p>Manage your subscriptions in the subscription portal.</p></div>
+						</div>
+
+						<SectionHeader title="BahnCard" more />
+						<div class="feature-card"><img class="card-art" src="/icons/bahncard.svg" alt="" /><div><h3>Manage BahnCard</h3><p>Manage your BahnCard easily online.</p></div></div>
+
+						<SectionHeader title="BahnBonus" />
+						<div class="feature-card"><img class="card-art" src="/icons/bahnbonus.png" alt="" /><div><h3>BahnBonus</h3><p>Take part in the BahnBonus loyalty programme.</p></div></div>
+
+						<SectionHeader title="Favourites" more />
+						<div class="favourite-card"><div><svg class="star"><use href="#i-star"/></svg><strong>Bad Pyrmont</strong></div><p>+3 more favourites saved</p></div>
+
+						<SectionHeader title="Newsletter and services" />
+						<div class="feature-card"><img class="card-art" src="/icons/manage-settings.svg" alt="" /><div><h3>Manage settings</h3><p>Offers, vouchers, information</p></div></div>
+
+						<SectionHeader title="Benefits" />
+						<div class="feature-card"><img class="card-art" src="/icons/benefits.svg" alt="" /><div><h3>Your benefits</h3><p>We are currently preparing new benefits for you. Please check back again later.</p></div></div>
+
+						<div class="settings-list">
+							<button type="button" data-open-settings>Settings</button><a>Cancel contract</a><a>Withdrawing from contract</a><a>Help & contact</a><a>Privacy</a><a>Legal notice</a><a>Site notice</a>
+						</div>
+						<button class="logout" type="button" data-sign-out>Log out</button>
+						<p class="version">DB Navigator 26.8.0 (22001843) ❤️</p>
+					</div>
+				</section>
+			</main>
+
+			<TicketDetail />
+			<SettingsPanel />
+			<AuthGate />
+
+			<nav class="bottom-nav" aria-label="Main navigation">
+				<button class="active" data-target="booking"><img src="/icons/booking.svg" alt="" /><span>Booking</span></button>
+				<button data-target="nearby"><img src="/icons/nearby.svg" alt="" /><span>Nearby</span></button>
+				<button data-target="journeys"><img src="/icons/journeys.svg" alt="" /><span>Journeys</span></button>
+				<button data-target="profile"><img src="/icons/profile.svg" alt="" /><span>Profile</span></button>
+			</nav>
+		</div>
+
+		<script>
+			import { initializeApp } from 'firebase/app';
+			import {
+				browserLocalPersistence,
+				createUserWithEmailAndPassword,
+				getAuth,
+				onAuthStateChanged,
+				setPersistence,
+				signInWithEmailAndPassword,
+				signOut,
+			} from 'firebase/auth';
+			import {
+				doc,
+				getDoc,
+				getFirestore,
+				serverTimestamp,
+				setDoc,
+			} from 'firebase/firestore';
+			import { firebaseConfig } from '../lib/firebase';
+
+			const firebaseApp = initializeApp(firebaseConfig);
+			const auth = getAuth(firebaseApp);
+			const firestore = getFirestore(firebaseApp);
+			const buttons = document.querySelectorAll('.bottom-nav button');
+			const screens = document.querySelectorAll('.screen');
+			const root = document.documentElement;
+			const themeColor = document.querySelector('#theme-color');
+			const ticketDetail = document.querySelector('.ticket-detail');
+			const ticketDetailScroll = document.querySelector('.ticket-detail-scroll');
+			const settingsPanel = document.querySelector('.settings-panel');
+			const settingsScroll = document.querySelector('.settings-scroll');
+			const authGate = document.querySelector('[data-auth-gate]');
+			let ticketOpen = false;
+			let settingsOpen = false;
+			let activeProfile = null;
+			const syncViewportHeight = () => {
+				const height = Math.round(window.innerHeight);
+				const bottomGap = Math.max(
+					0,
+					Math.min(120, Math.round(window.screen.height - height)),
+				);
+				root.style.setProperty('--app-height', `${height}px`);
+				root.style.setProperty('--canvas-bottom-gap', `${bottomGap}px`);
+			};
+
+			const setNearbyCanvas = (active) => {
+				root.classList.toggle('nearby-active-page', active);
+				document.body.classList.toggle('nearby-active-page', active);
+				document.querySelector('.app-shell')?.classList.toggle('nearby-active', active);
+				themeColor?.setAttribute('content', active ? '#276957' : '#292c38');
+			};
+
+			const setTicketOpen = (open, instant = false) => {
+				ticketOpen = open;
+				ticketDetail?.classList.toggle('no-transition', instant);
+				ticketDetail?.classList.toggle('open', open);
+				ticketDetail?.setAttribute('aria-hidden', String(!open));
+				themeColor?.setAttribute('content', open ? '#f2f2f4' : '#292c38');
+				if (open && ticketDetailScroll instanceof HTMLElement) ticketDetailScroll.scrollTop = 0;
+				if (instant && ticketDetail instanceof HTMLElement) {
+					void ticketDetail.offsetWidth;
+					ticketDetail.classList.remove('no-transition');
+				}
+			};
+
+			const setSettingsOpen = (open, instant = false) => {
+				settingsOpen = open;
+				settingsPanel?.classList.toggle('no-transition', instant);
+				settingsPanel?.classList.toggle('open', open);
+				settingsPanel?.setAttribute('aria-hidden', String(!open));
+				themeColor?.setAttribute('content', '#292c38');
+				if (open && settingsScroll instanceof HTMLElement) settingsScroll.scrollTop = 0;
+				if (instant && settingsPanel instanceof HTMLElement) {
+					void settingsPanel.offsetWidth;
+					settingsPanel.classList.remove('no-transition');
+				}
+			};
+
+			const securityAssets = {
+				cross: '/icons/security-cross.svg',
+				waves: '/icons/security-waves.svg',
+				dateLine: '/icons/security-date-line.png',
+			};
+			const securityImageCache = new Map();
+			const loadSecurityImage = (src) => {
+				if (!securityImageCache.has(src)) {
+					securityImageCache.set(src, new Promise((resolve, reject) => {
+						const image = new Image();
+						image.onload = () => resolve(image);
+						image.onerror = reject;
+						image.src = src;
+					}));
+				}
+				return securityImageCache.get(src);
+			};
+			const fitCanvasFont = (context, text, maxWidth, weight, startSize) => {
+				let size = startSize;
+				do {
+					context.font = `${weight} ${size}px "Arial Narrow", Arial, sans-serif`;
+					size -= .5;
+				} while (context.measureText(text).width > maxWidth && size > 6);
+			};
+			const drawSecurityNumber = (context, value, y, height, alpha = 1) => {
+				const numberLayer = document.createElement('canvas');
+				numberLayer.width = 480;
+				numberLayer.height = 48;
+				const numberContext = numberLayer.getContext('2d', { willReadFrequently: true });
+				if (!numberContext) return;
+				numberContext.textAlign = 'left';
+				numberContext.textBaseline = 'alphabetic';
+				let x = 8;
+				[...value].forEach((character, index) => {
+					const highlighted = index === 2 || index === 5;
+					numberContext.font = `800 ${highlighted ? 38 : 32}px "Arial Narrow", Arial, sans-serif`;
+					numberContext.fillStyle = highlighted ? '#858486' : '#c8c7c9';
+					numberContext.fillText(character, x, 41);
+					x += numberContext.measureText(character).width;
+				});
+
+				const pixels = numberContext.getImageData(0, 0, numberLayer.width, numberLayer.height);
+				let minX = numberLayer.width;
+				let minY = numberLayer.height;
+				let maxX = 0;
+				let maxY = 0;
+				for (let pixelY = 0; pixelY < numberLayer.height; pixelY += 1) {
+					for (let pixelX = 0; pixelX < numberLayer.width; pixelX += 1) {
+						if (pixels.data[(pixelY * numberLayer.width + pixelX) * 4 + 3] === 0) continue;
+						minX = Math.min(minX, pixelX);
+						minY = Math.min(minY, pixelY);
+						maxX = Math.max(maxX, pixelX);
+						maxY = Math.max(maxY, pixelY);
+					}
+				}
+				if (maxX <= minX || maxY <= minY) return;
+				context.save();
+				context.globalAlpha = alpha;
+				context.drawImage(
+					numberLayer,
+					minX,
+					minY,
+					maxX - minX + 1,
+					maxY - minY + 1,
+					0,
+					y,
+					context.canvas.width,
+					height,
+				);
+				context.restore();
+			};
+			const drawBackgroundText = (context, canvas, ticketData) => {
+				const serial = `${ticketData.orderNumber}${ticketData.position}`;
+				const tokens = [
+					'2. Kl.',
+					'1 Pers. (ab 6J.)',
+					ticketData.passenger,
+					'Deutschland-Ticket',
+					ticketData.validFrom,
+					serial,
+					'Fahrkarte',
+				];
+				let seed = Number.parseInt(ticketData.orderNumber, 10) || 1;
+				const random = () => {
+					seed = (seed * 1664525 + 1013904223) >>> 0;
+					return seed / 4294967296;
+				};
+				context.save();
+				context.beginPath();
+				context.rect(0, 29, canvas.width, 101);
+				context.clip();
+				context.translate(-23, 39);
+				context.rotate(-8 * Math.PI / 180);
+				context.fillStyle = '#c5c4c5';
+				context.font = '700 10px Arial, sans-serif';
+				for (let row = 0; row < 14; row += 1) {
+					const rowTokens = [...tokens];
+					for (let index = rowTokens.length - 1; index > 0; index -= 1) {
+						const swapIndex = Math.floor(random() * (index + 1));
+						[rowTokens[index], rowTokens[swapIndex]] = [rowTokens[swapIndex], rowTokens[index]];
+					}
+					const phrase = `${rowTokens.join('  ')}  `;
+					let x = -Math.floor(random() * 75);
+					while (x < 300) {
+						context.fillText(phrase, x, row * 9.5);
+						x += context.measureText(phrase).width;
+					}
+				}
+				context.restore();
+			};
+			const drawWaveLayer = (context, waves) => {
+				if (!waves) return;
+				const waveLayer = document.createElement('canvas');
+				waveLayer.width = 250;
+				waveLayer.height = 132;
+				const waveContext = waveLayer.getContext('2d');
+				if (!waveContext) return;
+				waveContext.drawImage(waves, 0, 0, waveLayer.width, waveLayer.height);
+				waveContext.globalCompositeOperation = 'source-in';
+				waveContext.fillStyle = '#b0afb2';
+				waveContext.fillRect(0, 0, waveLayer.width, waveLayer.height);
+				waveContext.globalCompositeOperation = 'destination-in';
+				const fade = waveContext.createLinearGradient(0, 0, waveLayer.width, 0);
+				fade.addColorStop(0, 'rgba(0,0,0,0)');
+				fade.addColorStop(.42, 'rgba(0,0,0,.22)');
+				fade.addColorStop(1, 'rgba(0,0,0,1)');
+				waveContext.fillStyle = fade;
+				waveContext.fillRect(0, 0, waveLayer.width, waveLayer.height);
+				context.save();
+				context.beginPath();
+				context.rect(0, 29, 196, 101);
+				context.clip();
+				context.drawImage(waveLayer, -22, 20);
+				context.restore();
+			};
+			const drawSecurityPhoto = (context, image, canvas) => {
+				const width = canvas.width * .34;
+				const height = width * (image.naturalHeight / image.naturalWidth);
+				const y = Math.max(0, Math.min(canvas.height * .32, canvas.height - height));
+				context.drawImage(image, canvas.width * .53, y, width, height);
+			};
+			const securityRenderTokens = new WeakMap();
+			const renderSecurityTicket = async (canvas) => {
+				if (!(canvas instanceof HTMLCanvasElement)) return;
+				const context = canvas.getContext('2d');
+				if (!context) return;
+				const renderToken = (securityRenderTokens.get(canvas) ?? 0) + 1;
+				securityRenderTokens.set(canvas, renderToken);
+				const ticketData = {
+					passenger: canvas.dataset.passenger ?? '',
+					birthDate: canvas.dataset.birthDate ?? '',
+					validFrom: canvas.dataset.validFrom ?? '',
+					validDay: canvas.dataset.validDay ?? '',
+					validMonth: canvas.dataset.validMonth ?? '',
+					orderNumber: canvas.dataset.orderNumber ?? '',
+					position: (canvas.dataset.position ?? '').replace(/\D/g, ''),
+					securityPhotoUrl: canvas.dataset.securityPhotoUrl ?? '',
+				};
+				const serial = `${ticketData.orderNumber}${ticketData.position}`;
+				const [cross, waves, dateLine, securityPhoto] = await Promise.all([
+					loadSecurityImage(securityAssets.cross).catch(() => null),
+					loadSecurityImage(securityAssets.waves).catch(() => null),
+					loadSecurityImage(securityAssets.dateLine).catch(() => null),
+					ticketData.securityPhotoUrl
+						? loadSecurityImage(ticketData.securityPhotoUrl).catch(() => null)
+						: Promise.resolve(null),
+				]);
+				if (securityRenderTokens.get(canvas) !== renderToken) return;
+				context.clearRect(0, 0, canvas.width, canvas.height);
+				context.fillStyle = '#fff';
+				context.fillRect(0, 0, canvas.width, 30);
+				drawWaveLayer(context, waves);
+				if (cross) {
+					context.globalAlpha = .9;
+					context.drawImage(cross, 3, 48, 76, 77);
+					context.globalAlpha = 1;
+				}
+				drawBackgroundText(context, canvas, ticketData);
+				drawSecurityNumber(context, serial, 0, 30);
+
+				if (securityPhoto) {
+					context.save();
+					context.globalAlpha = .8;
+					drawSecurityPhoto(context, securityPhoto, canvas);
+					context.restore();
+				}
+
+				context.textAlign = 'center';
+				context.fillStyle = '#050505';
+				fitCanvasFont(context, ticketData.passenger, 126, '800', 14);
+				context.fillText(ticketData.passenger, 118, 65);
+				fitCanvasFont(context, ticketData.birthDate, 110, '800', 13);
+				context.fillText(ticketData.birthDate, 118, 83);
+
+				context.textAlign = 'left';
+				context.fillStyle = '#636265';
+				context.font = '400 29px "Arial Narrow", Arial, sans-serif';
+				context.fillText(ticketData.validDay, 7, 100);
+				context.fillText(ticketData.validMonth, 47, 100);
+				if (dateLine) context.drawImage(dateLine, 5, 106, 65, 5);
+
+				context.fillStyle = '#fff';
+				context.fillRect(0, 130, canvas.width, 30);
+				context.save();
+				context.translate(0, canvas.height);
+				context.scale(1, -1);
+				drawSecurityNumber(context, serial, 0, 30, .48);
+				context.restore();
+			};
+			document.querySelectorAll('.security-ticket').forEach((canvas) => {
+				renderSecurityTicket(canvas);
+				new MutationObserver(() => renderSecurityTicket(canvas)).observe(canvas, {
+					attributes: true,
+					attributeFilter: ['data-passenger', 'data-birth-date', 'data-valid-from', 'data-valid-day', 'data-valid-month', 'data-order-number', 'data-position', 'data-security-photo-url'],
+				});
+			});
+
+			const padDatePart = (value) => String(value).padStart(2, '0');
+			const formatStoredDate = (value) => {
+				const [year, month, day] = String(value ?? '').split('-');
+				return year && month && day ? `${day}.${month}.${year}` : '';
+			};
+			const calculateValidity = (validFrom, validUntil) => ({
+				validFrom: formatStoredDate(validFrom),
+				validUntil: formatStoredDate(validUntil),
+			});
+			const formatPurchasedAt = (value) => {
+				const [date, time] = String(value ?? '').split('T');
+				return date && time ? `${formatStoredDate(date)} um ${time.slice(0, 5)} Uhr` : '';
+			};
+			const setText = (selector, value) => {
+				const target = document.querySelector(selector);
+				if (target) target.textContent = value;
+			};
+			const setDataText = (selector, value) => {
+				const target = document.querySelector(selector);
+				if (!target) return;
+				const normalized = String(value ?? '').trim();
+				target.textContent = normalized;
+			};
+			const profileCacheKey = 'db-navigator-profile-v2';
+			const ticketMediaCache = 'navigation-ticket-media-v1';
+			const readCachedProfile = () => {
+				try {
+					const cached = localStorage.getItem(profileCacheKey);
+					return cached ? JSON.parse(cached) : null;
+				} catch {
+					return null;
+				}
+			};
+			const cacheProfile = (profile) => {
+				try {
+					localStorage.setItem(profileCacheKey, JSON.stringify(profile));
+				} catch {}
+			};
+			const cacheQrImage = async (url) => {
+				if (!url || !('caches' in window) || !navigator.onLine) return;
+				try {
+					const cache = await caches.open(ticketMediaCache);
+					const request = new Request(url, { mode: 'no-cors', credentials: 'omit', cache: 'no-store' });
+					if (await cache.match(request)) return;
+					const response = await fetch(request);
+					await cache.put(request, response);
+				} catch {}
+			};
+			const randomDigits = (length) => {
+				const values = new Uint8Array(length);
+				crypto.getRandomValues(values);
+				return [...values].map((value) => String(value % 10)).join('');
+			};
+			const createPaymentMask = () =>
+				`DE${randomDigits(2)} •••• •••• •••• ••${randomDigits(2)} ${randomDigits(2)}`;
+			const profileFromForm = (form) => {
+				const data = new FormData(form);
+				const canvasPhotoToggle = form.elements.namedItem('canvasPhotoEnabled');
+				const profile = {
+					qrUrl: String(data.get('qrUrl') ?? '').trim(),
+					securityPhotoUrl: String(data.get('securityPhotoUrl') ?? '').trim(),
+					canvasPhotoEnabled: canvasPhotoToggle instanceof HTMLInputElement
+						? canvasPhotoToggle.checked
+						: true,
+					validFrom: String(data.get('validFrom') ?? ''),
+					validUntil: String(data.get('validUntil') ?? ''),
+					firstName: String(data.get('firstName') ?? '').trim(),
+					lastName: String(data.get('lastName') ?? '').trim(),
+					customerId: String(data.get('customerId') ?? '').trim(),
+					birthDate: String(data.get('birthDate') ?? ''),
+					civ: String(data.get('civ') ?? '').trim(),
+					purchasedAt: String(data.get('purchasedAt') ?? ''),
+					position: String(data.get('position') ?? '').trim(),
+					orderNumber: String(data.get('orderNumber') ?? '').trim(),
+					price: String(data.get('price') ?? '').trim().replace('.', ','),
+					ticketCode: String(data.get('ticketCode') ?? '').trim(),
+				};
+				return profile;
+			};
+			const populateProfileForm = (form, profile) => {
+				if (!(form instanceof HTMLFormElement) || !profile) return;
+				Object.entries(profile).forEach(([name, value]) => {
+					const input = form.elements.namedItem(name);
+					if (input instanceof HTMLInputElement && input.type === 'checkbox' && typeof value === 'boolean') {
+						input.checked = value;
+						return;
+					}
+					if (input instanceof HTMLInputElement && typeof value === 'string') input.value = value;
+				});
+			};
+			const applyProfile = (profile) => {
+				if (!profile) return;
+				cacheProfile(profile);
+				const fullName = `${profile.firstName} ${profile.lastName}`.trim();
+				const birthDate = formatStoredDate(profile.birthDate);
+				const validity = calculateValidity(profile.validFrom, profile.validUntil);
+				const purchasedAt = formatPurchasedAt(profile.purchasedAt);
+				const price = profile.price ? `${String(profile.price).replace('.', ',')} €` : '';
+
+				setDataText('[data-ticket-summary-from]', validity.validFrom);
+				setDataText('[data-ticket-card-valid-from]', validity.validFrom ? `Valid from ${validity.validFrom} at 00:00` : '');
+				setDataText('[data-ticket-full-name]', fullName);
+				setDataText('[data-ticket-birth-date]', birthDate);
+				setDataText('[data-ticket-civ]', profile.civ);
+				setDataText('[data-ticket-valid-from]', validity.validFrom);
+				setDataText('[data-ticket-valid-until]', validity.validUntil);
+				setDataText('[data-ticket-purchased-at]', purchasedAt);
+				setDataText('[data-ticket-order-number]', profile.orderNumber);
+				setDataText('[data-ticket-position]', profile.position);
+				setDataText('[data-ticket-price]', price);
+				setDataText('[data-ticket-code]', profile.ticketCode);
+				setDataText('[data-profile-name]', fullName);
+				setDataText('[data-profile-customer-id]', profile.customerId ? `Customer ID ${profile.customerId}` : '');
+				setDataText('[data-profile-email]', profile.email);
+				setDataText('[data-profile-payment]', profile.paymentMask);
+				setDataText('[data-profile-payment-name]', fullName);
+
+				const qrImage = document.querySelector('[data-ticket-qr]');
+				if (qrImage instanceof HTMLImageElement) {
+					qrImage.hidden = true;
+					qrImage.onload = () => {
+						qrImage.hidden = false;
+						cacheQrImage(profile.qrUrl);
+					};
+					qrImage.onerror = () => {
+						qrImage.hidden = true;
+					};
+					if (profile.qrUrl) {
+						qrImage.src = profile.qrUrl;
+						cacheQrImage(profile.qrUrl);
+					}
+					else qrImage.removeAttribute('src');
+				}
+
+				const inlinePhoto = document.querySelector('[data-ticket-security-photo]');
+				if (inlinePhoto instanceof HTMLImageElement) {
+					inlinePhoto.hidden = true;
+					inlinePhoto.onload = () => {
+						inlinePhoto.hidden = false;
+						cacheQrImage(profile.securityPhotoUrl);
+					};
+					inlinePhoto.onerror = () => {
+						inlinePhoto.hidden = true;
+					};
+					if (profile.securityPhotoUrl) inlinePhoto.src = profile.securityPhotoUrl;
+					else inlinePhoto.removeAttribute('src');
+				}
+
+				const canvas = document.querySelector('.security-ticket');
+				if (canvas instanceof HTMLCanvasElement) {
+					const [validDay, validMonth] = validity.validFrom.split('.');
+					canvas.dataset.passenger = fullName;
+					canvas.dataset.birthDate = birthDate;
+					canvas.dataset.validFrom = validity.validFrom;
+					canvas.dataset.validDay = validDay ?? '';
+					canvas.dataset.validMonth = validMonth ?? '';
+					canvas.dataset.orderNumber = profile.orderNumber || '';
+					canvas.dataset.position = profile.position || '';
+					canvas.dataset.securityPhotoUrl = profile.canvasPhotoEnabled === false
+						? ''
+						: profile.securityPhotoUrl || '';
+					if (profile.securityPhotoUrl) cacheQrImage(profile.securityPhotoUrl);
+				}
+			};
+			const setFormStatus = (selector, message, error = false) => {
+				const status = document.querySelector(selector);
+				if (!status) return;
+				status.textContent = message;
+				status.classList.toggle('error', error);
+			};
+			const setFormBusy = (form, busy) => {
+				if (!(form instanceof HTMLFormElement)) return;
+				form.querySelectorAll('button').forEach((button) => {
+					button.disabled = busy;
+				});
+				form.querySelectorAll('input').forEach((input) => {
+					input.readOnly = busy;
+				});
+			};
+			const showAuthGate = (show) => {
+				authGate?.classList.remove('pending');
+				authGate?.classList.toggle('dismissed', !show);
+				authGate?.setAttribute('aria-hidden', String(!show));
+			};
+
+			const updateArrivalTime = () => {
+				const target = document.querySelector('#arrival-time');
+				if (!target) return;
+				const now = new Date();
+				const time = new Intl.DateTimeFormat('en-GB', {
+					hour: '2-digit',
+					minute: '2-digit',
+					hour12: false,
+				}).format(now);
+				target.textContent = `Arr | Today, ${time}`;
+			};
+
+			const bindEdgeSwipe = (panel, closePanel) => {
+				if (!(panel instanceof HTMLElement)) return;
+				let startX = 0;
+				let startY = 0;
+				let distance = 0;
+				let tracking = false;
+				panel.addEventListener('touchstart', (event) => {
+					const touch = event.touches[0];
+					tracking = touch.clientX <= 28;
+					startX = touch.clientX;
+					startY = touch.clientY;
+					distance = 0;
+					if (tracking) panel.classList.add('swiping');
+				}, { passive: true });
+				panel.addEventListener('touchmove', (event) => {
+					if (!tracking) return;
+					event.preventDefault();
+					const touch = event.touches[0];
+					const dx = Math.max(0, touch.clientX - startX);
+					const dy = Math.abs(touch.clientY - startY);
+					if (dx <= dy) return;
+					distance = dx;
+					panel.style.setProperty('--swipe-x', `${dx}px`);
+				}, { passive: false });
+				panel.addEventListener('touchend', () => {
+					if (!tracking) return;
+					panel.classList.remove('swiping');
+					panel.style.removeProperty('--swipe-x');
+					if (distance >= 72) closePanel();
+					tracking = false;
+				}, { passive: true });
+			};
+
+			buttons.forEach((button) => button.addEventListener('click', () => {
+				const target = button.dataset.target;
+				const wasTicketOpen = ticketOpen;
+				const wasSettingsOpen = settingsOpen;
+				if (wasTicketOpen) setTicketOpen(false, true);
+				if (wasSettingsOpen) setSettingsOpen(false, true);
+				if (target === 'journeys' && wasTicketOpen) return;
+				if (target === 'profile' && wasSettingsOpen) return;
+				buttons.forEach((item) => item.classList.toggle('active', item === button));
+				screens.forEach((screen) => screen.classList.toggle('active', screen.dataset.screen === target));
+				setNearbyCanvas(target === 'nearby');
+				document.querySelector(`[data-screen="${target}"]`).scrollTop = 0;
+			}));
+			document.querySelector('.ticket-card')?.addEventListener('click', () => setTicketOpen(true));
+			document.querySelector('.ticket-card')?.addEventListener('keydown', (event) => {
+				if (event.key === 'Enter' || event.key === ' ') {
+					event.preventDefault();
+					setTicketOpen(true);
+				}
+			});
+			document.querySelector('[data-open-settings]')?.addEventListener('click', () => {
+				const settingsForm = document.querySelector('[data-settings-form]');
+				populateProfileForm(settingsForm, activeProfile);
+				setSettingsOpen(true);
+			});
+			bindEdgeSwipe(ticketDetail, () => setTicketOpen(false));
+			bindEdgeSwipe(settingsPanel, () => setSettingsOpen(false));
+			document.addEventListener('keydown', (event) => {
+				if (event.key === 'Escape' && ticketOpen) setTicketOpen(false);
+				if (event.key === 'Escape' && settingsOpen) setSettingsOpen(false);
+			});
+
+			document.querySelectorAll('[data-auth-tab]').forEach((tab) => {
+				tab.addEventListener('click', () => {
+					const target = tab.getAttribute('data-auth-tab');
+					document.querySelectorAll('[data-auth-tab]').forEach((item) => {
+						item.classList.toggle('active', item === tab);
+					});
+					document.querySelectorAll('[data-auth-form]').forEach((form) => {
+						form.toggleAttribute('hidden', form.getAttribute('data-auth-form') !== target);
+					});
+				});
+			});
+
+			const loginForm = document.querySelector('[data-auth-form="login"]');
+			const registerForm = document.querySelector('[data-auth-form="register"]');
+			const settingsForm = document.querySelector('[data-settings-form]');
+			const cachedProfile = readCachedProfile();
+			const registrationDraftKey = 'db-navigator-registration-draft-v1';
+			navigator.storage?.persist?.().catch(() => {});
+			const saveRegistrationDraft = () => {
+				if (!(registerForm instanceof HTMLFormElement)) return;
+				const draft = Object.fromEntries(new FormData(registerForm).entries());
+				delete draft.password;
+				try {
+					localStorage.setItem(registrationDraftKey, JSON.stringify(draft));
+				} catch {}
+			};
+			const restoreRegistrationDraft = () => {
+				if (!(registerForm instanceof HTMLFormElement)) return;
+				try {
+					const storedDraft = localStorage.getItem(registrationDraftKey);
+					if (storedDraft) populateProfileForm(registerForm, JSON.parse(storedDraft));
+				} catch {}
+			};
+			restoreRegistrationDraft();
+			registerForm?.addEventListener('input', saveRegistrationDraft);
+			registerForm?.addEventListener('change', saveRegistrationDraft);
+			let registrationInProgress = false;
+
+			loginForm?.addEventListener('submit', async (event) => {
+				event.preventDefault();
+				if (!(loginForm instanceof HTMLFormElement)) return;
+				const data = new FormData(loginForm);
+				setFormBusy(loginForm, true);
+				setFormStatus('[data-login-status]', 'Signing in…');
+				try {
+					await signInWithEmailAndPassword(
+						auth,
+						String(data.get('email') ?? '').trim(),
+						String(data.get('password') ?? ''),
+					);
+					setFormStatus('[data-login-status]', '');
+				} catch (error) {
+					setFormStatus('[data-login-status]', error instanceof Error ? error.message : 'Unable to sign in.', true);
+				} finally {
+					setFormBusy(loginForm, false);
+				}
+			});
+
+			registerForm?.addEventListener('submit', async (event) => {
+				event.preventDefault();
+				if (!(registerForm instanceof HTMLFormElement)) return;
+				const data = new FormData(registerForm);
+				setFormBusy(registerForm, true);
+				setFormStatus('[data-register-status]', 'Creating account…');
+				registrationInProgress = true;
+				try {
+					const profile = profileFromForm(registerForm);
+					const paymentMask = createPaymentMask();
+					const credential = await createUserWithEmailAndPassword(
+						auth,
+						String(data.get('email') ?? '').trim(),
+						String(data.get('password') ?? ''),
+					);
+					await setDoc(doc(firestore, 'users', credential.user.uid), {
+						...profile,
+						email: credential.user.email,
+						paymentMask,
+						schemaVersion: 1,
+						createdAt: serverTimestamp(),
+						updatedAt: serverTimestamp(),
+					});
+					activeProfile = { ...profile, email: credential.user.email, paymentMask, _uid: credential.user.uid };
+					applyProfile(activeProfile);
+					populateProfileForm(settingsForm, activeProfile);
+					localStorage.removeItem(registrationDraftKey);
+					showAuthGate(false);
+					setFormStatus('[data-register-status]', '');
+				} catch (error) {
+					setFormStatus('[data-register-status]', error instanceof Error ? error.message : 'Unable to create account.', true);
+				} finally {
+					registrationInProgress = false;
+					setFormBusy(registerForm, false);
+				}
+			});
+
+			settingsForm?.addEventListener('submit', async (event) => {
+				event.preventDefault();
+				if (!(settingsForm instanceof HTMLFormElement) || !auth.currentUser) return;
+				setFormBusy(settingsForm, true);
+				setFormStatus('[data-settings-status]', 'Saving…');
+				try {
+					const profile = profileFromForm(settingsForm);
+					const nextProfile = {
+						...activeProfile,
+						...profile,
+						email: auth.currentUser.email,
+						paymentMask: activeProfile?.paymentMask || createPaymentMask(),
+					};
+					activeProfile = nextProfile;
+					applyProfile(activeProfile);
+					if (!navigator.onLine) {
+						setFormStatus('[data-settings-status]', 'Saved offline');
+						return;
+					}
+					await setDoc(doc(firestore, 'users', auth.currentUser.uid), {
+						...nextProfile,
+						schemaVersion: 1,
+						updatedAt: serverTimestamp(),
+					}, { merge: true });
+					setFormStatus('[data-settings-status]', 'Saved');
+				} catch (error) {
+					setFormStatus('[data-settings-status]', error instanceof Error ? error.message : 'Unable to save changes.', true);
+				} finally {
+					setFormBusy(settingsForm, false);
+				}
+			});
+
+			document.querySelectorAll('[data-sign-out]').forEach((button) => {
+				button.addEventListener('click', async () => {
+					setSettingsOpen(false, true);
+					await signOut(auth);
+				});
+			});
+
+			setPersistence(auth, browserLocalPersistence).catch(() => {});
+			onAuthStateChanged(auth, async (user) => {
+				if (!user) {
+					activeProfile = null;
+					setTicketOpen(false, true);
+					setSettingsOpen(false, true);
+					showAuthGate(true);
+					return;
+				}
+				if (registrationInProgress) return;
+				if (cachedProfile?._uid === user.uid) {
+					activeProfile = cachedProfile;
+					applyProfile(activeProfile);
+					populateProfileForm(settingsForm, activeProfile);
+					showAuthGate(false);
+				}
+				try {
+					const snapshot = await getDoc(doc(firestore, 'users', user.uid));
+					if (!snapshot.exists()) {
+						await signOut(auth);
+						setFormStatus('[data-login-status]', 'This account has no ticket profile. Please register a new account.', true);
+						return;
+					}
+					activeProfile = { ...snapshot.data(), _uid: user.uid };
+					if (!activeProfile.paymentMask) {
+						activeProfile.paymentMask = createPaymentMask();
+						await setDoc(doc(firestore, 'users', user.uid), {
+							paymentMask: activeProfile.paymentMask,
+							updatedAt: serverTimestamp(),
+						}, { merge: true });
+					}
+					applyProfile(activeProfile);
+					populateProfileForm(settingsForm, activeProfile);
+					showAuthGate(false);
+				} catch (error) {
+					if (cachedProfile?._uid === user.uid) {
+						activeProfile = cachedProfile;
+						applyProfile(activeProfile);
+						populateProfileForm(settingsForm, activeProfile);
+						showAuthGate(false);
+					} else {
+						showAuthGate(true);
+						setFormStatus('[data-login-status]', error instanceof Error ? error.message : 'Unable to load the account.', true);
+					}
+				}
+			});
+
+			syncViewportHeight();
+			window.visualViewport?.addEventListener('resize', syncViewportHeight);
+			window.addEventListener('resize', syncViewportHeight);
+			updateArrivalTime();
+			setInterval(updateArrivalTime, 1000);
+			document.querySelector('.agree-button')?.addEventListener('click', () => {
+				document.querySelector('.map-consent')?.classList.add('dismissed');
+			});
+			document.querySelector('.refresh-button')?.addEventListener('click', () => {
+				const screen = document.querySelector('[data-screen="journeys"]');
+				if (!screen || screen.classList.contains('is-loading')) return;
+				screen.classList.add('is-loading');
+				setTimeout(() => {
+					screen.classList.remove('is-loading');
+					screen.classList.add('is-loaded');
+					screen.scrollTop = 0;
+				}, 1000);
+			});
+			document.querySelector('.search-button')?.addEventListener('click', (event) => {
+				event.currentTarget.textContent = 'Searching…';
+				setTimeout(() => event.currentTarget.textContent = 'Search', 900);
+			});
+			if ('serviceWorker' in navigator) {
+				window.addEventListener('load', async () => {
+					const registration = await navigator.serviceWorker.register('/sw.js', { updateViaCache: 'none' });
+					await registration.update();
+				});
+			}
+		</script>
 	</body>
 </html>
+
+<style is:global>
+	:root {
+		font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+		color: #f4f4f5;
+		background: var(--chrome);
+		--bg: #12151d;
+		--chrome: #292c38;
+		--card: #292c36;
+		--muted: #a5a8b1;
+		--line: #353945;
+		--accent: #ff7d8c;
+		--safe-top: max(env(safe-area-inset-top), 24px);
+		--safe-bottom: min(env(safe-area-inset-bottom), 20px);
+		--nav-height: max(78px, calc(62px + var(--safe-bottom)));
+		--canvas-bottom-gap: 0px;
+		--ui-scale: .82;
+		--main-header-height: 70px;
+		--unscaled-panel-header-height: 57.4px;
+		--overscroll-guard: max(100dvh, 800px);
+	}
+	* { box-sizing: border-box; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent; }
+	img { -webkit-user-drag: none; user-drag: none; pointer-events: none; }
+	html, body { margin: 0; width: 100%; height: 100%; min-height: 100%; overflow: hidden; background: var(--chrome); overscroll-behavior: none; }
+	html.nearby-active-page,
+	body.nearby-active-page {
+		background-color: var(--chrome);
+		background-image:
+			linear-gradient(
+				to bottom,
+				transparent 0 calc(100% - var(--canvas-bottom-gap)),
+				var(--chrome) calc(100% - var(--canvas-bottom-gap)) 100%
+			),
+			url('/icons/map-bg.png');
+		background-position: 0 0, center;
+		background-size: 100% 100%, cover;
+		background-repeat: no-repeat;
+	}
+	button, input { font: inherit; }
+	button { color: inherit; }
+	.svg-defs { position: absolute; width: 0; height: 0; overflow: hidden; }
+	.app-shell { position: fixed; z-index: 1; top: 0; bottom: auto; left: 50%; width: min(100%, 430px); height: var(--app-height, 100dvh); min-height: 0; margin: 0; overflow: hidden; transform: translateX(-50%); background: var(--bg); }
+	.app-shell.nearby-active { background: transparent; }
+	.system-safe-area { position: absolute; z-index: 30; inset: 0 0 auto; height: var(--safe-top); background: var(--chrome); pointer-events: none; }
+	.app-shell.nearby-active .system-safe-area { background: transparent; }
+	main { position: absolute; inset: var(--safe-top) 0 var(--nav-height); }
+	*, *::before, *::after { box-sizing: border-box; }
+	.screen { display: none; position: absolute; top: 0; left: 0; width: 121.951%; height: 121.951%; max-width: 121.951%; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; transform: scale(var(--ui-scale)); transform-origin: top left; scrollbar-width: none; background: var(--bg); }
+	.screen[data-screen="booking"] { background: var(--chrome); }
+	.screen::-webkit-scrollbar { display: none; }
+	.screen.active { display: block; }
+	svg { width: 26px; height: 26px; fill: none; stroke: currentColor; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+	.content { padding: 0 28px 55px; background: var(--bg); }
+	h1,h2,h3,p { margin: 0; }
+
+	.auth-gate {
+		position: absolute;
+		z-index: 90;
+		inset: 0;
+		color: #f4f4f5;
+		background: var(--bg);
+		opacity: 1;
+		visibility: visible;
+		transition: opacity .2s ease, visibility 0s;
+	}
+	.auth-gate.pending {
+		opacity: 0;
+		visibility: hidden;
+		pointer-events: none;
+	}
+	.auth-gate.dismissed {
+		opacity: 0;
+		visibility: hidden;
+		pointer-events: none;
+		transition: opacity .2s ease, visibility 0s linear .2s;
+	}
+	.auth-shell {
+		width: 100%;
+		height: 100%;
+		padding: calc(var(--safe-top) + 30px) 24px 50px;
+		overflow-y: auto;
+		-webkit-overflow-scrolling: touch;
+	}
+	.auth-logo { display: block; width: 70px; height: 49px; margin: 0 auto 14px; object-fit: contain; }
+	.auth-shell > h1 { font-size: 25px; text-align: center; }
+	.auth-intro { margin-top: 8px; color: var(--muted); font-size: 14px; text-align: center; }
+	.auth-tabs {
+		height: 45px;
+		margin: 28px 0 22px;
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		border-bottom: 1px solid var(--line);
+	}
+	.auth-tabs button {
+		border: 0;
+		border-bottom: 4px solid transparent;
+		background: transparent;
+		color: var(--muted);
+		font-size: 16px;
+		font-weight: 700;
+	}
+	.auth-tabs button.active { border-bottom-color: var(--accent); color: #fff; }
+	.auth-form,
+	.settings-form { display: grid; gap: 16px; min-width: 0; max-width: 100%; overflow-x: hidden; }
+	.auth-form label,
+	.settings-form label,
+	.profile-fields,
+	.field-pair { min-width: 0; max-width: 100%; }
+	.auth-form[hidden] { display: none; }
+	.register-form { padding-bottom: 30px; }
+	.auth-form > label,
+	.profile-fields > label,
+	.field-pair label {
+		display: grid;
+		gap: 7px;
+		font-size: 14px;
+		font-weight: 700;
+	}
+	.profile-fields { display: grid; gap: 16px; }
+	.toggle-field {
+		min-height: 54px;
+		grid-template-columns: 1fr auto;
+		align-items: center;
+		gap: 18px;
+	}
+	.toggle-field > span { display: grid; gap: 4px; }
+	.toggle-field strong { font-size: 14px; font-weight: 700; }
+	.toggle-field input[type="checkbox"] {
+		position: relative;
+		width: 48px;
+		height: 28px;
+		padding: 0;
+		border: 0;
+		border-radius: 16px;
+		background: #626673;
+		appearance: none;
+		cursor: pointer;
+	}
+	.toggle-field input[type="checkbox"]::after {
+		content: "";
+		position: absolute;
+		top: 3px;
+		left: 3px;
+		width: 22px;
+		height: 22px;
+		border-radius: 50%;
+		background: #fff;
+		transition: transform .16s ease;
+	}
+	.toggle-field input[type="checkbox"]:checked { background: var(--accent); }
+	.toggle-field input[type="checkbox"]:checked::after { transform: translateX(20px); }
+	.field-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+	.auth-form input,
+	.settings-form input {
+		width: 100%;
+		min-width: 0;
+		max-width: 100%;
+		height: 45px;
+		padding: 0 13px;
+		border: 1px solid #555966;
+		border-radius: 4px;
+		outline: none;
+		color: #fff;
+		background: #1b1e27;
+		font-size: 16px;
+		user-select: text;
+		-webkit-user-select: text;
+	}
+	.auth-form input:focus,
+	.settings-form input:focus { border-color: #b7bac3; }
+	.auth-form small,
+	.settings-form small { color: var(--muted); font-size: 11px; font-weight: 400; }
+	.form-primary,
+	.form-secondary {
+		width: 100%;
+		height: 49px;
+		border-radius: 4px;
+		font-size: 17px;
+		font-weight: 750;
+	}
+	.form-primary { border: 0; background: #737984; color: #fff; }
+	.form-secondary { margin-top: 12px; border: 1px solid #9195a0; background: transparent; color: #fff; }
+	.form-status { min-height: 18px; color: #b7bac3; font-size: 13px; }
+	.form-status.error { color: #ff9caa; }
+	.hidden { display: none !important; }
+
+	.settings-panel {
+		--swipe-x: 0px;
+		position: absolute;
+		z-index: 35;
+		inset: var(--safe-top) 0 var(--nav-height);
+		color: #f4f4f5;
+		background: var(--bg);
+		visibility: hidden;
+		transform: translateX(100%);
+		transition: transform .28s cubic-bezier(.22, .78, .24, 1), visibility 0s linear .28s;
+		will-change: transform;
+	}
+	.settings-panel.open {
+		visibility: visible;
+		transform: translateX(var(--swipe-x));
+		transition-delay: 0s;
+	}
+	.settings-panel.no-transition,
+	.settings-panel.swiping { transition: none; }
+	.settings-panel.swiping .settings-scroll { overflow-y: hidden; }
+	.settings-title {
+		height: 40px;
+		display: grid;
+		place-items: center;
+		background: var(--chrome);
+		font-size: 19px;
+		font-weight: 750;
+	}
+	.settings-scroll {
+		position: absolute;
+		inset: 40px 0 0;
+		overflow-y: auto;
+		-webkit-overflow-scrolling: touch;
+	}
+	.settings-form { padding: 22px 24px 60px; }
+	.settings-lead { margin-bottom: 4px; font-size: 20px; }
+
+	.ticket-detail {
+		--swipe-x: 0px;
+		position: absolute;
+		z-index: 35;
+		inset: var(--safe-top) 0 var(--nav-height);
+		overflow: hidden;
+		color: #111216;
+		background: #fff;
+		visibility: hidden;
+		transform: translateX(100%);
+		transition: transform .28s cubic-bezier(.22, .78, .24, 1), visibility 0s linear .28s;
+		will-change: transform;
+	}
+	.ticket-detail.open {
+		visibility: visible;
+		transform: translateX(var(--swipe-x));
+		transition-delay: 0s;
+	}
+	.ticket-detail.no-transition { transition: none; }
+	.ticket-detail.swiping { transition: none; }
+	.ticket-detail.swiping .ticket-detail-scroll { overflow-y: hidden; }
+	.ticket-detail-scroll {
+		width: 100%;
+		height: 100%;
+		overflow-x: hidden;
+		overflow-y: auto;
+		-webkit-overflow-scrolling: touch;
+		background: #fff;
+		scrollbar-width: none;
+	}
+	.ticket-detail-scroll::-webkit-scrollbar { display: none; }
+	.subscription-title {
+		position: sticky;
+		z-index: 5;
+		top: 0;
+		height: var(--unscaled-panel-header-height);
+		display: grid;
+		place-items: center;
+		color: #111216;
+		background: #fff;
+		border-bottom: 1px solid #eeeef0;
+		font-size: 19px;
+		font-weight: 750;
+		letter-spacing: 0;
+	}
+	.subscription-title::before {
+		content: "";
+		position: absolute;
+		z-index: -1;
+		left: 0;
+		right: 0;
+		bottom: 100%;
+		height: 160px;
+		background: #fff;
+	}
+	.subscription-summary {
+		height: 72px;
+		padding: 0 23px;
+		display: flex;
+		align-items: center;
+		gap: 17px;
+		color: #050505;
+		border-bottom: 2px solid #d8d8da;
+		font-family: Arial, Helvetica, sans-serif;
+	}
+	.subscription-summary img { width: 47px; height: 34px; object-fit: contain; }
+	.subscription-summary strong,
+	.subscription-summary span { display: block; font-size: 15px; line-height: 1.23; }
+	.subscription-summary strong { font-weight: 800; }
+	.subscription-ticket {
+		padding: 10px 19px 22px;
+		color: #050505;
+		background: #fff;
+		font-family: Arial, Helvetica, sans-serif;
+		-webkit-font-smoothing: antialiased;
+	}
+	.tariff-mark {
+		position: relative;
+		width: calc(100% + 38px);
+		height: 43px;
+		margin-left: -19px;
+		overflow: hidden;
+		container-type: inline-size;
+	}
+	.tariff-mark img {
+		position: absolute;
+		top: 4px;
+		left: 0;
+		width: 70px;
+		height: 34px;
+		transform: translate3d(3px, 0, 0);
+		animation: tariff-shuttle 4.3s linear infinite alternate;
+		will-change: transform;
+	}
+	@keyframes tariff-shuttle {
+		0%, 7% { transform: translate3d(3px, 0, 0); }
+		7% {
+			transform: translate3d(3px, 0, 0);
+			animation-timing-function: cubic-bezier(.62, .04, .38, .96);
+		}
+		93%, 100% { transform: translate3d(calc(100cqw - 73px), 0, 0); }
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.tariff-mark img { animation: none; transform: translate3d(calc(50cqw - 35px), 0, 0); }
+	}
+	.ticket-placeholder {
+		width: 100%;
+		background: transparent;
+	}
+	.ticket-placeholder--qr {
+		position: relative;
+		aspect-ratio: .98;
+		overflow: hidden;
+	}
+	.ticket-placeholder--qr img { width: 100%; height: 100%; object-fit: contain; }
+	.qr-divider {
+		width: 100%;
+		height: 1px;
+		margin-top: 16px;
+		background: #777;
+	}
+	.passenger {
+		padding: 26px 0 11px;
+		font-size: 18px;
+		font-weight: 400;
+		line-height: 1.22;
+	}
+	.ticket-inline-photo {
+		display: block;
+		width: 35%;
+		max-width: 35vw;
+		height: auto;
+		margin: 0 0 11px;
+		opacity: 1;
+	}
+	.ticket-inline-photo[hidden] { display: none; }
+	.ticket-copy {
+		font-size: 18px;
+		font-weight: 400;
+		line-height: 1.25;
+	}
+	.ticket-copy h2 {
+		margin: 0;
+		padding-top: 10px;
+		font-size: 18px;
+		font-weight: 700;
+		line-height: 1.15;
+	}
+	.ticket-copy p { margin: 0; }
+	.ticket-copy h2:first-child { padding-top: 0; margin-bottom: 5px; }
+	.ticket-copy p + p { margin-top: 12px; }
+	.ticket-copy .ticket-code { margin: 13px 0 24px; font-size: 15px; }
+	.security-ticket-divider {
+		width: 100%;
+		height: 1px;
+		margin-bottom: 7px;
+		background: #777;
+	}
+	.security-ticket {
+		display: block;
+		width: 100%;
+		height: auto;
+		aspect-ratio: 1.225;
+		background: transparent;
+		filter: blur(.18px);
+		image-rendering: auto;
+	}
+	.ticket-actions {
+		padding: 27px 27px calc(25px + env(safe-area-inset-bottom));
+		background: #f2f3f6;
+		border-top: 1px solid #eeeef1;
+	}
+	.ticket-actions button {
+		width: 100%;
+		height: 50px;
+		border: 1px solid #8c8e94;
+		border-radius: 5px;
+		color: #22242a;
+		background: transparent;
+		font-size: 15px;
+	}
+
+	.bottom-nav { position: absolute; z-index: 40; inset: auto 0 0; height: var(--nav-height); padding-bottom: var(--safe-bottom); display: grid; grid-template-columns: repeat(4,1fr); background: #292c38; border-top: 1px solid #333642; }
+	.bottom-nav button { appearance: none; border: 0; background: transparent; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; color: #8d919c; font-size: 11px; font-weight: 700; cursor: pointer; }
+	.bottom-nav button:focus { outline: none; }
+	.bottom-nav button img { width: 27px; height: 27px; object-fit: contain; opacity: .48; transition: opacity .16s ease; }
+	.bottom-nav button.active { color: #fff; }
+	.bottom-nav button.active img { opacity: 1; }
+
+	.booking-top { position: relative; z-index: 0; padding: 17px 27px 26px; background: var(--chrome); border-radius: 0 0 8px 8px; }
+	.booking-top::before,
+	.title-row::before { content: ""; position: absolute; z-index: -1; left: 0; right: 0; bottom: 100%; height: var(--overscroll-guard); background: var(--chrome); }
+	.journey-type { padding: 0 0 7px; border: 0; border-bottom: 5px solid var(--accent); background: transparent; font-size: 19px; font-weight: 750; }
+	.route-fields { position: relative; margin-top: 20px; }
+	.route-fields div { height: 44px; margin-bottom: 7px; padding: 11px 14px; background: #12151d; border-radius: 5px; font-size: 16px; }
+	.swap { position: absolute; top: 17px; right: 11px; width: 48px; height: 48px; border: 0; border-radius: 50%; background: #292c38; font-size: 28px; font-weight: 800; }
+	.swap img { width: 22px; height: 28px; }
+	.options { margin-top: 22px; }
+	.options > div { min-height: 52px; display: grid; grid-template-columns: 28px 1fr auto 18px; align-items: center; gap: 9px; border-bottom: 1px solid #444854; font-size: 15px; }
+	.options > div:last-child { border-bottom: 0; }
+	.options svg { width: 21px; height: 21px; }
+	.options svg:last-child { width: 15px; color: #bfc1c7; }
+	.option-icon { width: 23px; height: 23px; object-fit: contain; }
+	.option-icon.fastest { width: 22px; height: 24px; }
+	.options strong { max-width: 178px; overflow: hidden; white-space: nowrap; font-size: 15px; text-align: right; }
+	.options small { display: block; margin-top: 6px; color: var(--muted); font-size: 14px; }
+	.runner { font-size: 22px; }
+	.search-button { width: 100%; height: 48px; margin-top: 10px; border: 0; border-radius: 5px; background: #737984; font-size: 20px; font-weight: 400; }
+	.section-header { margin: 32px 0 18px; display: flex; align-items: center; justify-content: space-between; }
+	.section-header h2 { font-size: 22px; font-weight: 400; letter-spacing: -.02em; }
+	.section-header span { color: var(--muted); font-size: 16px; }
+	.mini-card { height: 58px; padding: 0 18px; display: flex; align-items: center; gap: 17px; border-radius: 5px; background: var(--card); }
+	.star { color: #ffa000; fill: #ffa000; stroke: #ffa000; }
+	.dots { height: 29px; display: flex; justify-content: center; align-items: center; gap: 9px; }
+	.dots i,.dots b { width: 7px; height: 7px; border: 1px solid #90949e; border-radius: 50%; }
+	.dots b { background: #9296a0; }
+	.feature-card { min-height: 138px; padding: 24px 22px; display: grid; grid-template-columns: 125px 1fr; gap: 22px; align-items: center; border-radius: 6px; background: var(--card); }
+	.feature-card h3 { margin-bottom: 10px; font-size: 18px; font-weight: 750; }
+	.feature-card p { color: var(--muted); font-size: 15px; line-height: 1.25; }
+	.card-art { width: 125px; height: 100px; object-fit: contain; }
+	.bc-symbol { width: 95px; height: 76px; padding: 13px; border: 2px solid #f4f4f5; border-radius: 12px; }
+	.bc-symbol b { display: block; color: var(--accent); font-size: 25px; }
+	.bc-symbol span,.bc-symbol i { display: block; width: 52px; margin-top: 7px; border-top: 2px solid white; }
+	.bc-symbol i { width: 28px; margin-top: 5px; }
+	.worker { color: #888d98; font-size: 70px; text-align: center; line-height: .8; }
+	.worker span { display: block; width: 45px; margin: -21px auto 0; border-top: 3px solid #ef0022; }
+
+	.nearby-screen { top: 0; overflow: hidden; background: transparent; }
+	.map-search { position: absolute; z-index: 5; top: 18px; left: 18px; right: 18px; height: 58px; padding: 0 17px; border: 0; border-radius: 6px; display: flex; align-items: center; color: #b5b8c0; background: #292c38; font-size: 17px; font-weight: 400; text-align: left; }
+	.map-search svg { width: 27px; height: 27px; margin-left: auto; color: #fff; stroke-width: 2.5; }
+	.map-consent { position: absolute; z-index: 4; top: 87px; left: 17px; right: 17px; min-height: 327px; padding: 17px 22px 18px; border-radius: 4px; background: #292c38; box-shadow: 0 8px 24px rgba(0,0,0,.18); transition: opacity .24s ease, transform .24s ease; }
+	.map-consent.dismissed { opacity: 0; transform: translateY(-10px); pointer-events: none; }
+	.map-consent h1 { font-size: 20px; font-weight: 800; text-align: center; }
+	.consent-accent { width: 49px; height: 5px; margin: 9px auto 12px; border-radius: 4px; background: var(--accent); }
+	.map-consent p { margin-top: 0; margin-bottom: 16px; font-size: 14px; line-height: 1.17; }
+	.more-information { height: 23px; padding: 0; border: 0; background: transparent; font-size: 15px; }
+	.more-information span { color: #ef304b; font-size: 27px; line-height: 0; vertical-align: -2px; }
+	.agree-button { width: 100%; height: 49px; margin-top: 9px; border: 0; border-radius: 4px; background: #737984; color: #fff; font-size: 20px; font-weight: 750; }
+	.transport-drawer { position: absolute; z-index: 2; inset: auto 0 0; height: 93px; background: #292c38; border-radius: 10px 10px 0 0; }
+	.grabber { width: 46px; margin: 15px auto 20px; border-top: 5px solid #a8adb7; border-radius: 4px; }
+	.transport-tabs { display: flex; justify-content: space-between; padding: 0 18px; color: #b8bac1; font-size: 15px; white-space: nowrap; }
+	.transport-tabs span { height: 41px; display: flex; align-items: center; gap: 7px; }
+	.transport-tabs img { width: 25px; height: 25px; object-fit: contain; opacity: .78; }
+	.transport-tabs .selected { border-bottom: 4px solid var(--accent); }
+	.transport-tabs .selected img { width: 30px; height: 30px; }
+
+	.title-row { position: sticky; z-index: 20; top: 0; height: var(--main-header-height); padding: 0 22px; display: grid; grid-template-columns: 42px 1fr 42px; align-items: center; background: var(--chrome); text-align: center; }
+	.title-row h1 { font-size: 23px; font-weight: 750; }
+	.header-icon { width: 38px; height: 38px; padding: 0; display: grid; place-items: center; border: 0; background: transparent; }
+	.header-icon svg { width: 31px; height: 31px; stroke-width: 2.4; }
+	.header-icon img { width: 26px; height: 22px; object-fit: contain; }
+	.header-icon.plus { justify-self: end; }
+	.header-icon.plus img { width: 27px; height: 27px; }
+	.journeys-initial,
+	.journeys-loading { min-height: calc(100% - var(--main-header-height)); background: var(--bg); }
+	.journeys-empty { min-height: 420px; padding: 76px 27px 0; text-align: center; }
+	.empty-art { position: relative; width: 130px; height: 112px; margin: 0 auto 28px; }
+	.empty-art > img { width: 130px; height: 91px; object-fit: contain; }
+	.empty-ticket { position: absolute; top: 0; left: 12px; width: 95px; height: 67px; display: grid; place-items: center; border: 2px solid #f2f2f4; border-radius: 12px; }
+	.empty-ticket svg { width: 48px; height: 48px; stroke-width: 2; }
+	.empty-art > span { position: absolute; right: 2px; top: 42px; width: 48px; height: 48px; display: grid; place-items: center; border: 2px solid #f2f2f4; border-radius: 50%; color: var(--accent); background: var(--card); font-size: 38px; font-weight: 200; line-height: 1; }
+	.empty-art > i { position: absolute; left: 27px; bottom: 6px; width: 72px; height: 7px; border-radius: 50%; background: #3c3f4b; }
+	.journeys-empty h2 { font-size: 18px; font-weight: 800; }
+	.journeys-empty p { margin-top: 13px; font-size: 15px; line-height: 1.35; }
+	.refresh-button { width: 100%; height: 52px; margin-top: 28px; border: 1px solid #9296a0; border-radius: 5px; background: transparent; font-size: 16px; }
+	.previous-trips { padding: 17px 29px 60px; }
+	.previous-trips h2 { margin-bottom: 14px; font-size: 22px; font-weight: 400; }
+	.previous-trips button { width: 100%; height: 58px; padding: 0 22px; border: 0; border-radius: 5px; background: var(--card); color: #fff; text-align: left; font-weight: 800; }
+	.journeys-loading,.journeys-loaded { display: none; }
+	.screen.is-loading .journeys-initial { display: none; }
+	.screen.is-loading .journeys-loading { min-height: 500px; display: grid; place-items: center; }
+	.ios-spinner { width: 34px; height: 34px; border-radius: 50%; background: conic-gradient(from 0deg, #e6e7eb, #c9cbd1, #a2a5ae, #7b7f89, #555a65, transparent 82%); -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 5px), #000 0); mask: radial-gradient(farthest-side, transparent calc(100% - 5px), #000 0); animation: spin .72s linear infinite; }
+	@keyframes spin { to { transform: rotate(1turn); } }
+	.screen.is-loaded .journeys-initial { display: none; }
+	.screen.is-loaded .journeys-loaded { display: block; padding-top: 22px; animation: journey-in .28s ease; }
+	@keyframes journey-in { from { opacity: 0; transform: translateY(8px); } }
+	.journeys-loaded h2 { margin: 0 0 22px; font-size: 21px; font-weight: 400; line-height: 1.28; }
+	.journeys-loaded h2 span { float: right; color: var(--muted); }
+	.ticket-card,.repeat-card { border-radius: 6px; background: var(--card); }
+	.ticket-card { cursor: pointer; }
+	.ticket-card:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+	.ticket-head { min-height: 95px; padding: 18px; position: relative; border-bottom: 1px dashed #11141c; }
+	.ticket-head h3 { margin-top: 13px; font-size: 18px; }
+	.ticket-qr { position: absolute; top: 18px; right: 18px; width: 29px; height: 29px; }
+	.db-logo { display: inline-grid; place-items: center; width: 43px; height: 27px; color: #ed0016; background: white; border: 4px solid #ed0016; border-radius: 2px; font-family: Arial,sans-serif; font-size: 19px; font-weight: 900; line-height: 1; }
+	.ticket-db-logo { width: 43px; height: 30px; object-fit: contain; object-position: left center; }
+	.ticket-info { padding: 15px 20px 18px; }
+	.ticket-info p { margin: 8px 0; display: flex; gap: 15px; color: #b6b9c1; font-size: 15px; line-height: 1.25; }
+	.ticket-info p > img { flex: 0 0 20px; width: 20px; height: 20px; object-fit: contain; }
+	.ticket-info span { color: #e2e3e6; }
+	.journeys-loaded hr { margin: 28px 0; border: 0; border-top: 1px solid var(--line); }
+	.repeat-card { position: relative; padding: 20px; min-height: 164px; }
+	.repeat-card label { display: block; width: fit-content; margin-bottom: 10px; padding: 4px 7px; border-radius: 4px; background: #8f939d; font-size: 15px; font-weight: 700; }
+	.repeat-card b { font-size: 18px; line-height: 1.22; }
+	.repeat-card p { margin-top: 10px; display: flex; align-items: center; gap: 12px; color: #d9dadf; font-size: 15px; }
+	.repeat-card p img { width: 16px; height: 18px; object-fit: contain; }
+	.toggle { position: absolute; right: 18px; bottom: 29px; width: 70px; height: 34px; border: 0; border-radius: 20px; background: #626673; }
+	.toggle::after { content:""; position:absolute; left:3px; top:3px; width:28px; height:28px; border-radius:50%; background:#fff; }
+	.previous { padding: 15px 22px; border-radius: 6px; background: var(--card); font-weight: 700; }
+
+	.profile-content { padding-top: 1px; }
+	.info-card { min-height: 74px; padding: 18px 23px; display: grid; grid-template-columns: 46px 1fr; gap: 15px; align-items: center; border-radius: 6px; background: var(--card); }
+	.info-card svg { width: 34px; height: 34px; }
+	.info-icon { width: 42px; height: 42px; object-fit: contain; }
+	.info-card b,.info-card span { display: block; font-size: 15px; }
+	.info-card div span { margin-top: 5px; color: var(--muted); font-size: 14px; letter-spacing: .03em; }
+	.lock { font-size: 33px !important; }
+	.sepa { font-size: 24px !important; }
+	.sepa small { display: block; font-size: 8px; font-weight: 800; }
+	.ticket-illustration,.newsletter,.benefits { position: relative; font-size: 70px; line-height: 1; }
+	.ticket-illustration span,.newsletter span,.benefits span { position: absolute; right: 2px; bottom: -3px; width: 38px; height: 38px; display: grid; place-items: center; color: var(--accent); background: var(--card); border: 2px solid #fff; border-radius: 50%; font-size: 18px; }
+	.bonus { width: 95px; height: 76px; padding: 25px 42px; border: 2px solid white; border-radius: 12px; font-size: 14px; }
+	.bonus small,.bonus i { position: absolute; margin: -10px 0 0 6px; font-size: 20px; }
+	.bonus i { margin: 12px 0 0 -11px; font-size: 11px; }
+	.favourite-card { border-radius: 6px; background: var(--card); }
+	.favourite-card div { height: 78px; padding: 0 28px; display: flex; align-items: center; gap: 20px; }
+	.favourite-card p { padding: 14px 28px; border-top: 1px solid #3a3e49; color: var(--muted); }
+	.settings-list { margin: 40px -28px 0; border-top: 1px solid var(--line); }
+	.settings-list a,
+	.settings-list button { width: 100%; height: 53px; padding: 0 24px; display: flex; align-items: center; border: 0; border-bottom: 1px solid var(--line); background: transparent; color: #fff; font-size: 15px; text-align: left; }
+	.settings-list a::after,
+	.settings-list button::after { content:"›"; margin-left:auto; color:#646873; font-size:30px; font-weight:800; }
+	.logout { width: 100%; height: 51px; margin-top: 55px; border: 1px solid #9195a0; border-radius: 4px; background: transparent; font-size: 16px; }
+	.version { padding: 28px 0 60px; color: #b0b3bb; text-align: center; font-size: 15px; }
+	@media (min-width: 431px) {
+		.app-shell { box-shadow: 0 0 0 1px #232630, 0 20px 70px #000; }
+	}
+</style>

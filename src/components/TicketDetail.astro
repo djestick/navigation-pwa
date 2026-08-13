@@ -1,0 +1,102 @@
+---
+const ticket = Astro.props.ticket ?? {
+	passengerName: '',
+	birthDate: '',
+	validFrom: '',
+	validUntil: '',
+	bookedAt: '',
+	orderNumber: '',
+	position: '',
+	price: '',
+	ticketCode: '',
+	civ: '',
+};
+
+const [validDay, validMonth] = ticket.validFrom.split('.');
+---
+
+<section class="ticket-detail" aria-hidden="true" aria-label="Abo">
+	<div class="ticket-detail-scroll">
+		<header class="subscription-title">Abo</header>
+
+		<div class="subscription-summary">
+			<img src="/icons/db-logo.svg" alt="DB" />
+			<div>
+				<strong>Deutschland-Ticket DTV</strong>
+				<span>Gültig vom <span data-ticket-summary-from>{ticket.validFrom}</span></span>
+			</div>
+		</div>
+
+		<article class="subscription-ticket">
+			<div class="tariff-mark" aria-label="Deutschland-Tarif">
+				<img src="/icons/deutschland-tarif.png" alt="Deutschland-Tarif" />
+			</div>
+
+			<div class="ticket-placeholder ticket-placeholder--qr" aria-label="QR code">
+				<img data-ticket-qr alt="Subscription ticket QR code" hidden />
+			</div>
+			<div class="qr-divider" aria-hidden="true"></div>
+
+			<div class="passenger">
+				<p data-ticket-full-name>{ticket.passengerName}</p>
+				<p>Geburtsdatum: <span data-ticket-birth-date>{ticket.birthDate}</span></p>
+			</div>
+
+			<img class="ticket-inline-photo" data-ticket-security-photo alt="" hidden />
+
+			<div class="ticket-copy">
+				<h2 data-ticket-civ>{ticket.civ}</h2>
+
+				<h2>Gültigkeit</h2>
+				<p>Fahrkarte<br />
+					Deutschland-Ticket<br />
+					2. Klasse<br />
+					1 Person (ab 6 Jahre)<br />
+					Von: <span data-ticket-valid-from>{ticket.validFrom}</span>, 00:00 Uhr<br />
+					Bis: <span data-ticket-valid-until>{ticket.validUntil}</span>, 03:00 Uhr
+				</p>
+
+				<h2>Buchungsdetails</h2>
+				<p>Gebucht am: <span data-ticket-purchased-at>{ticket.bookedAt}</span><br />
+					Auftrags-Nr: <span data-ticket-order-number>{ticket.orderNumber}</span><br />
+					Position: <span data-ticket-position>{ticket.position}</span><br />
+					Gesamtpreis: <span data-ticket-price>{ticket.price}</span>
+				</p>
+
+				<h2>Konditionen</h2>
+				<p>Gilt im angegebenen Geltungszeitraum<br />
+					bundesweit für beliebig viele Fahrten in allen<br />
+					Nahverkehrszügen, Verkehrsverbünden,<br />
+					Landestarifen und teilnehmenden<br />
+					Verkehrsunternehmen.
+				</p>
+				<p>Nur gültig mit amtlichem Lichtbildausweis.<br />
+					Dieser ist bei der Kontrolle vorzuzeigen.<br />
+					Es gelten die Tarifbedingungen des<br />
+					Deutschlandtarifs.
+				</p>
+				<p class="ticket-code">Ticketcode: <span data-ticket-code>{ticket.ticketCode}</span></p>
+			</div>
+
+			<div class="security-ticket-divider" aria-hidden="true"></div>
+			<canvas
+				class="security-ticket"
+				width="196"
+				height="160"
+				aria-label="Dynamic ticket security design"
+				data-passenger={ticket.passengerName}
+				data-birth-date={ticket.birthDate}
+				data-valid-from={ticket.validFrom}
+				data-valid-day={validDay}
+				data-valid-month={validMonth}
+				data-order-number={ticket.orderNumber}
+				data-position={ticket.position}
+				data-security-photo-url={ticket.securityPhotoUrl ?? ''}
+			></canvas>
+		</article>
+
+		<footer class="ticket-actions">
+			<button type="button">More actions</button>
+		</footer>
+	</div>
+</section>

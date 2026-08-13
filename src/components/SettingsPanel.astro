@@ -1,0 +1,16 @@
+---
+import TicketProfileFields from './TicketProfileFields.astro';
+---
+
+<section class="settings-panel" aria-hidden="true" aria-label="Ticket settings">
+	<header class="settings-title">Settings</header>
+	<div class="settings-scroll">
+		<form class="settings-form" data-settings-form>
+			<p class="settings-lead">Subscription ticket details</p>
+			<TicketProfileFields prefix="settings" />
+			<p class="form-status" data-settings-status aria-live="polite"></p>
+			<button class="form-primary" type="submit">Save changes</button>
+			<button class="form-secondary" type="button" data-sign-out>Log out</button>
+		</form>
+	</div>
+</section>
