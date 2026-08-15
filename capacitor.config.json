@@ -1,5 +1,5 @@
 {
-	"appId": "de.local.dbnavigator",
+	"appId": "de.local.dbnavigator.local",
 	"appName": "DB Navigator",
 	"webDir": "dist",
 	"server": {
