@@ -188,7 +188,7 @@ import SettingsPanel from '../components/SettingsPanel.astro';
 						<div class="settings-list">
 							<button type="button" data-open-settings>Settings</button><a>Cancel contract</a><a>Withdrawing from contract</a><a>Help & contact</a><a>Privacy</a><a>Legal notice</a><a>Site notice</a>
 						</div>
-						<button class="logout" type="button" data-sign-out>Log out</button>
+						<button class="logout" type="button" data-clear-local-data>Delete local data</button>
 						<p class="version">DB Navigator 26.8.0 (22001843) ❤️</p>
 					</div>
 				</section>
@@ -207,28 +207,6 @@ import SettingsPanel from '../components/SettingsPanel.astro';
 		</div>
 
 		<script>
-			import { initializeApp } from 'firebase/app';
-			import {
-				browserLocalPersistence,
-				createUserWithEmailAndPassword,
-				getAuth,
-				onAuthStateChanged,
-				setPersistence,
-				signInWithEmailAndPassword,
-				signOut,
-			} from 'firebase/auth';
-			import {
-				doc,
-				getDoc,
-				getFirestore,
-				serverTimestamp,
-				setDoc,
-			} from 'firebase/firestore';
-			import { firebaseConfig } from '../lib/firebase';
-
-			const firebaseApp = initializeApp(firebaseConfig);
-			const auth = getAuth(firebaseApp);
-			const firestore = getFirestore(firebaseApp);
 			const buttons = document.querySelectorAll('.bottom-nav button');
 			const screens = document.querySelectorAll('.screen');
 			const root = document.documentElement;
@@ -525,7 +503,44 @@ import SettingsPanel from '../components/SettingsPanel.astro';
 				target.textContent = normalized;
 			};
 			const profileCacheKey = 'db-navigator-profile-v2';
-			const ticketMediaCache = 'navigation-ticket-media-v1';
+			const mediaDatabaseName = 'db-navigator-local-media';
+			const openMediaDatabase = () => new Promise((resolve, reject) => {
+				const request = indexedDB.open(mediaDatabaseName, 1);
+				request.onupgradeneeded = () => request.result.createObjectStore('images');
+				request.onsuccess = () => resolve(request.result);
+				request.onerror = () => reject(request.error);
+			});
+			const writeMedia = async (key, file) => {
+				if (!(file instanceof File) || !file.size) return;
+				const database = await openMediaDatabase();
+				await new Promise((resolve, reject) => {
+					const transaction = database.transaction('images', 'readwrite');
+					transaction.objectStore('images').put(file, key);
+					transaction.oncomplete = resolve;
+					transaction.onerror = () => reject(transaction.error);
+				});
+				database.close();
+			};
+			const readMediaUrl = async (key) => {
+				const database = await openMediaDatabase();
+				const blob = await new Promise((resolve, reject) => {
+					const request = database.transaction('images').objectStore('images').get(key);
+					request.onsuccess = () => resolve(request.result);
+					request.onerror = () => reject(request.error);
+				});
+				database.close();
+				return blob instanceof Blob ? URL.createObjectURL(blob) : '';
+			};
+			const clearMedia = async () => {
+				const database = await openMediaDatabase();
+				await new Promise((resolve, reject) => {
+					const transaction = database.transaction('images', 'readwrite');
+					transaction.objectStore('images').clear();
+					transaction.oncomplete = resolve;
+					transaction.onerror = () => reject(transaction.error);
+				});
+				database.close();
+			};
 			const readCachedProfile = () => {
 				try {
 					const cached = localStorage.getItem(profileCacheKey);
@@ -536,17 +551,8 @@ import SettingsPanel from '../components/SettingsPanel.astro';
 			};
 			const cacheProfile = (profile) => {
 				try {
-					localStorage.setItem(profileCacheKey, JSON.stringify(profile));
-				} catch {}
-			};
-			const cacheQrImage = async (url) => {
-				if (!url || !('caches' in window) || !navigator.onLine) return;
-				try {
-					const cache = await caches.open(ticketMediaCache);
-					const request = new Request(url, { mode: 'no-cors', credentials: 'omit', cache: 'no-store' });
-					if (await cache.match(request)) return;
-					const response = await fetch(request);
-					await cache.put(request, response);
+					const { qrUrl, securityPhotoUrl, ...storedProfile } = profile;
+					localStorage.setItem(profileCacheKey, JSON.stringify(storedProfile));
 				} catch {}
 			};
 			const randomDigits = (length) => {
@@ -556,12 +562,18 @@ import SettingsPanel from '../components/SettingsPanel.astro';
 			};
 			const createPaymentMask = () =>
 				`DE${randomDigits(2)} •••• •••• •••• ••${randomDigits(2)} ${randomDigits(2)}`;
-			const profileFromForm = (form) => {
+			const profileFromForm = async (form) => {
 				const data = new FormData(form);
 				const canvasPhotoToggle = form.elements.namedItem('canvasPhotoEnabled');
+				const qrImage = data.get('qrImage');
+				const securityPhoto = data.get('securityPhoto');
+				await Promise.all([
+					writeMedia('qr', qrImage),
+					writeMedia('security', securityPhoto),
+				]);
 				const profile = {
-					qrUrl: String(data.get('qrUrl') ?? '').trim(),
-					securityPhotoUrl: String(data.get('securityPhotoUrl') ?? '').trim(),
+					qrUrl: qrImage instanceof File && qrImage.size ? URL.createObjectURL(qrImage) : activeProfile?.qrUrl || '',
+					securityPhotoUrl: securityPhoto instanceof File && securityPhoto.size ? URL.createObjectURL(securityPhoto) : activeProfile?.securityPhotoUrl || '',
 					canvasPhotoEnabled: canvasPhotoToggle instanceof HTMLInputElement
 						? canvasPhotoToggle.checked
 						: true,
@@ -623,14 +635,12 @@ import SettingsPanel from '../components/SettingsPanel.astro';
 					qrImage.hidden = true;
 					qrImage.onload = () => {
 						qrImage.hidden = false;
-						cacheQrImage(profile.qrUrl);
 					};
 					qrImage.onerror = () => {
 						qrImage.hidden = true;
 					};
 					if (profile.qrUrl) {
 						qrImage.src = profile.qrUrl;
-						cacheQrImage(profile.qrUrl);
 					}
 					else qrImage.removeAttribute('src');
 				}
@@ -640,7 +650,6 @@ import SettingsPanel from '../components/SettingsPanel.astro';
 					inlinePhoto.hidden = true;
 					inlinePhoto.onload = () => {
 						inlinePhoto.hidden = false;
-						cacheQrImage(profile.securityPhotoUrl);
 					};
 					inlinePhoto.onerror = () => {
 						inlinePhoto.hidden = true;
@@ -662,7 +671,6 @@ import SettingsPanel from '../components/SettingsPanel.astro';
 					canvas.dataset.securityPhotoUrl = profile.canvasPhotoEnabled === false
 						? ''
 						: profile.securityPhotoUrl || '';
-					if (profile.securityPhotoUrl) cacheQrImage(profile.securityPhotoUrl);
 				}
 			};
 			const setFormStatus = (selector, message, error = false) => {
@@ -763,126 +771,57 @@ import SettingsPanel from '../components/SettingsPanel.astro';
 				if (event.key === 'Escape' && settingsOpen) setSettingsOpen(false);
 			});
 
-			document.querySelectorAll('[data-auth-tab]').forEach((tab) => {
-				tab.addEventListener('click', () => {
-					const target = tab.getAttribute('data-auth-tab');
-					document.querySelectorAll('[data-auth-tab]').forEach((item) => {
-						item.classList.toggle('active', item === tab);
-					});
-					document.querySelectorAll('[data-auth-form]').forEach((form) => {
-						form.toggleAttribute('hidden', form.getAttribute('data-auth-form') !== target);
-					});
-				});
-			});
-
-			const loginForm = document.querySelector('[data-auth-form="login"]');
-			const registerForm = document.querySelector('[data-auth-form="register"]');
+			const setupForm = document.querySelector('[data-local-setup-form]');
 			const settingsForm = document.querySelector('[data-settings-form]');
 			const cachedProfile = readCachedProfile();
-			const registrationDraftKey = 'db-navigator-registration-draft-v1';
 			navigator.storage?.persist?.().catch(() => {});
-			const saveRegistrationDraft = () => {
-				if (!(registerForm instanceof HTMLFormElement)) return;
-				const draft = Object.fromEntries(new FormData(registerForm).entries());
-				delete draft.password;
-				try {
-					localStorage.setItem(registrationDraftKey, JSON.stringify(draft));
-				} catch {}
-			};
-			const restoreRegistrationDraft = () => {
-				if (!(registerForm instanceof HTMLFormElement)) return;
-				try {
-					const storedDraft = localStorage.getItem(registrationDraftKey);
-					if (storedDraft) populateProfileForm(registerForm, JSON.parse(storedDraft));
-				} catch {}
-			};
-			restoreRegistrationDraft();
-			registerForm?.addEventListener('input', saveRegistrationDraft);
-			registerForm?.addEventListener('change', saveRegistrationDraft);
-			let registrationInProgress = false;
 
-			loginForm?.addEventListener('submit', async (event) => {
-				event.preventDefault();
-				if (!(loginForm instanceof HTMLFormElement)) return;
-				const data = new FormData(loginForm);
-				setFormBusy(loginForm, true);
-				setFormStatus('[data-login-status]', 'Signing in…');
-				try {
-					await signInWithEmailAndPassword(
-						auth,
-						String(data.get('email') ?? '').trim(),
-						String(data.get('password') ?? ''),
-					);
-					setFormStatus('[data-login-status]', '');
-				} catch (error) {
-					setFormStatus('[data-login-status]', error instanceof Error ? error.message : 'Unable to sign in.', true);
-				} finally {
-					setFormBusy(loginForm, false);
-				}
+			const hydrateLocalMedia = async (profile) => ({
+				...profile,
+				qrUrl: await readMediaUrl('qr').catch(() => ''),
+				securityPhotoUrl: await readMediaUrl('security').catch(() => ''),
 			});
 
-			registerForm?.addEventListener('submit', async (event) => {
+			setupForm?.addEventListener('submit', async (event) => {
 				event.preventDefault();
-				if (!(registerForm instanceof HTMLFormElement)) return;
-				const data = new FormData(registerForm);
-				setFormBusy(registerForm, true);
-				setFormStatus('[data-register-status]', 'Creating account…');
-				registrationInProgress = true;
+				if (!(setupForm instanceof HTMLFormElement)) return;
+				setFormBusy(setupForm, true);
+				setFormStatus('[data-setup-status]', 'Saving on this device…');
 				try {
-					const profile = profileFromForm(registerForm);
-					const paymentMask = createPaymentMask();
-					const credential = await createUserWithEmailAndPassword(
-						auth,
-						String(data.get('email') ?? '').trim(),
-						String(data.get('password') ?? ''),
-					);
-					await setDoc(doc(firestore, 'users', credential.user.uid), {
+					const profile = await profileFromForm(setupForm);
+					const emailInput = setupForm.elements.namedItem('email');
+					activeProfile = {
 						...profile,
-						email: credential.user.email,
-						paymentMask,
-						schemaVersion: 1,
-						createdAt: serverTimestamp(),
-						updatedAt: serverTimestamp(),
-					});
-					activeProfile = { ...profile, email: credential.user.email, paymentMask, _uid: credential.user.uid };
+						email: emailInput instanceof HTMLInputElement ? emailInput.value.trim() : '',
+						paymentMask: createPaymentMask(),
+					};
 					applyProfile(activeProfile);
 					populateProfileForm(settingsForm, activeProfile);
-					localStorage.removeItem(registrationDraftKey);
 					showAuthGate(false);
-					setFormStatus('[data-register-status]', '');
+					setFormStatus('[data-setup-status]', '');
 				} catch (error) {
-					setFormStatus('[data-register-status]', error instanceof Error ? error.message : 'Unable to create account.', true);
+					setFormStatus('[data-setup-status]', error instanceof Error ? error.message : 'Unable to save.', true);
 				} finally {
-					registrationInProgress = false;
-					setFormBusy(registerForm, false);
+					setFormBusy(setupForm, false);
 				}
 			});
 
 			settingsForm?.addEventListener('submit', async (event) => {
 				event.preventDefault();
-				if (!(settingsForm instanceof HTMLFormElement) || !auth.currentUser) return;
+				if (!(settingsForm instanceof HTMLFormElement)) return;
 				setFormBusy(settingsForm, true);
 				setFormStatus('[data-settings-status]', 'Saving…');
 				try {
-					const profile = profileFromForm(settingsForm);
+					const profile = await profileFromForm(settingsForm);
 					const nextProfile = {
 						...activeProfile,
 						...profile,
-						email: auth.currentUser.email,
+						email: activeProfile?.email || '',
 						paymentMask: activeProfile?.paymentMask || createPaymentMask(),
 					};
 					activeProfile = nextProfile;
 					applyProfile(activeProfile);
-					if (!navigator.onLine) {
-						setFormStatus('[data-settings-status]', 'Saved offline');
-						return;
-					}
-					await setDoc(doc(firestore, 'users', auth.currentUser.uid), {
-						...nextProfile,
-						schemaVersion: 1,
-						updatedAt: serverTimestamp(),
-					}, { merge: true });
-					setFormStatus('[data-settings-status]', 'Saved');
+					setFormStatus('[data-settings-status]', 'Saved on this device');
 				} catch (error) {
 					setFormStatus('[data-settings-status]', error instanceof Error ? error.message : 'Unable to save changes.', true);
 				} finally {
@@ -890,59 +829,25 @@ import SettingsPanel from '../components/SettingsPanel.astro';
 				}
 			});
 
-			document.querySelectorAll('[data-sign-out]').forEach((button) => {
+			document.querySelectorAll('[data-clear-local-data]').forEach((button) => {
 				button.addEventListener('click', async () => {
+					if (!window.confirm('Delete all ticket information and photos from this device?')) return;
 					setSettingsOpen(false, true);
-					await signOut(auth);
+					localStorage.removeItem(profileCacheKey);
+					await clearMedia().catch(() => {});
+					activeProfile = null;
+					showAuthGate(true);
 				});
 			});
 
-			setPersistence(auth, browserLocalPersistence).catch(() => {});
-			onAuthStateChanged(auth, async (user) => {
-				if (!user) {
-					activeProfile = null;
-					setTicketOpen(false, true);
-					setSettingsOpen(false, true);
-					showAuthGate(true);
-					return;
-				}
-				if (registrationInProgress) return;
-				if (cachedProfile?._uid === user.uid) {
-					activeProfile = cachedProfile;
-					applyProfile(activeProfile);
-					populateProfileForm(settingsForm, activeProfile);
-					showAuthGate(false);
-				}
-				try {
-					const snapshot = await getDoc(doc(firestore, 'users', user.uid));
-					if (!snapshot.exists()) {
-						await signOut(auth);
-						setFormStatus('[data-login-status]', 'This account has no ticket profile. Please register a new account.', true);
-						return;
-					}
-					activeProfile = { ...snapshot.data(), _uid: user.uid };
-					if (!activeProfile.paymentMask) {
-						activeProfile.paymentMask = createPaymentMask();
-						await setDoc(doc(firestore, 'users', user.uid), {
-							paymentMask: activeProfile.paymentMask,
-							updatedAt: serverTimestamp(),
-						}, { merge: true });
-					}
-					applyProfile(activeProfile);
-					populateProfileForm(settingsForm, activeProfile);
-					showAuthGate(false);
-				} catch (error) {
-					if (cachedProfile?._uid === user.uid) {
-						activeProfile = cachedProfile;
-						applyProfile(activeProfile);
-						populateProfileForm(settingsForm, activeProfile);
-						showAuthGate(false);
-					} else {
-						showAuthGate(true);
-						setFormStatus('[data-login-status]', error instanceof Error ? error.message : 'Unable to load the account.', true);
-					}
-				}
-			});
+			if (cachedProfile) {
+				activeProfile = await hydrateLocalMedia(cachedProfile);
+				applyProfile(activeProfile);
+				populateProfileForm(settingsForm, activeProfile);
+				showAuthGate(false);
+			} else {
+				showAuthGate(true);
+			}
 
 			syncViewportHeight();
 			window.visualViewport?.addEventListener('resize', syncViewportHeight);

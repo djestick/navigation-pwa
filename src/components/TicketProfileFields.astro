@@ -8,14 +8,14 @@ const { prefix } = Astro.props;
 
 <div class="profile-fields">
 	<label>
-		<span>Direct QR image URL</span>
-		<input name="qrUrl" type="text" inputmode="url" placeholder="https://example.com/qr.png" pattern=".*\.[A-Za-z0-9]+$" />
-		<small>The value must end with a file extension, for example .png</small>
+		<span>QR image</span>
+		<input name="qrImage" type="file" accept="image/*" />
+		<small>Choose an image from Photos. It is stored only on this device.</small>
 	</label>
 
 	<label>
-		<span>Security photo URL</span>
-		<input name="securityPhotoUrl" type="url" inputmode="url" placeholder="https://example.com/photo.jpg" />
+		<span>Security photo</span>
+		<input name="securityPhoto" type="file" accept="image/*" />
 		<small>The photo is also shown between the passenger details and CIV.</small>
 	</label>
 

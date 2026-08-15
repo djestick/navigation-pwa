@@ -1,43 +1,25 @@
-# Astro Starter Kit: Minimal
+# DB Navigator — local iPhone app
+
+This branch packages the existing Astro interface as an iOS application with Capacitor. Firebase has been removed. Ticket details are saved in local storage and selected images are saved in IndexedDB inside the app sandbox.
+
+## Run in a browser
 
 ```sh
-npm create astro@latest -- --template minimal
+npm install
+npm run dev
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+## Install on an iPhone with a free Apple ID
 
-## 🚀 Project Structure
+1. Connect the iPhone to the Mac and trust the computer.
+2. Run `npm run ios:open`.
+3. In Xcode, select the **App** project and **App** target, then open **Signing & Capabilities**.
+4. Select your personal Apple ID team. If Xcode reports that the bundle identifier is already used, replace `de.local.dbnavigator` with a unique value.
+5. Select the connected iPhone as the run destination and press **Run**.
+6. If iOS asks, enable Developer Mode and trust the developer profile in Settings.
 
-Inside of your Astro project, you'll see the following folders and files:
+With free personal signing, the installation normally needs to be repeated after 7 days. App data is local to this installation and can be lost when the app is deleted.
 
-```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
-```
+## After web changes
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
-
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
-
-Any static assets, like images, can be placed in the `public/` directory.
-
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+Run `npm run ios:sync`, then build again in Xcode.

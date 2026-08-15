@@ -6,38 +6,16 @@ import TicketProfileFields from './TicketProfileFields.astro';
 	<div class="auth-shell">
 		<img class="auth-logo" src="/icons/db-logo.svg" alt="DB" />
 		<h1>DB Navigator</h1>
-		<p class="auth-intro">Sign in to access your subscription ticket.</p>
+		<p class="auth-intro">Set up your ticket. Everything stays on this iPhone.</p>
 
-		<div class="auth-tabs" role="tablist" aria-label="Account action">
-			<button type="button" class="active" data-auth-tab="login">Log in</button>
-			<button type="button" data-auth-tab="register">Register</button>
-		</div>
-
-		<form class="auth-form" data-auth-form="login">
+		<form class="auth-form register-form" data-local-setup-form>
 			<label>
 				<span>Email</span>
-				<input name="email" type="email" autocomplete="email" required />
+				<input name="email" type="email" autocomplete="email" />
 			</label>
-			<label>
-				<span>Password</span>
-				<input name="password" type="password" autocomplete="current-password" minlength="6" required />
-			</label>
-			<p class="form-status" data-login-status aria-live="polite"></p>
-			<button class="form-primary" type="submit">Log in</button>
-		</form>
-
-		<form class="auth-form register-form" data-auth-form="register" hidden>
-			<label>
-				<span>Email</span>
-				<input name="email" type="email" autocomplete="email" required />
-			</label>
-			<label>
-				<span>Password</span>
-				<input name="password" type="password" autocomplete="new-password" minlength="6" required />
-			</label>
-			<TicketProfileFields prefix="register" />
-			<p class="form-status" data-register-status aria-live="polite"></p>
-			<button class="form-primary" type="submit">Create account</button>
+			<TicketProfileFields prefix="setup" />
+			<p class="form-status" data-setup-status aria-live="polite"></p>
+			<button class="form-primary" type="submit">Save on this iPhone</button>
 		</form>
 	</div>
 </section>

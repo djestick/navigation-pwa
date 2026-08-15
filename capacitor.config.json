@@ -1,0 +1,8 @@
+{
+	"appId": "de.local.dbnavigator",
+	"appName": "DB Navigator",
+	"webDir": "dist",
+	"server": {
+		"iosScheme": "app"
+	}
+}
