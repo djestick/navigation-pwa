@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">DB Simulator</string>
+    <string name="title_activity_main">DB Simulator</string>
+    <string name="package_name">de.local.dbnavigator.local</string>
+    <string name="custom_url_scheme">de.local.dbnavigator.local</string>
+</resources>

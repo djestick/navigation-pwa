@@ -1,7 +1,7 @@
 {
-	"name": "DB Navigator",
-	"short_name": "DB Navigator",
-	"description": "DB Navigator mobile app",
+	"name": "DB Simulator",
+	"short_name": "DB Simulator",
+	"description": "DB Simulator mobile app",
 	"start_url": "/",
 	"display": "standalone",
 	"background_color": "#12151d",

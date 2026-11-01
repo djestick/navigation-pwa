@@ -1,6 +1,6 @@
 {
 	"appId": "de.local.dbnavigator.local",
-	"appName": "DB Navigator",
+	"appName": "DB Simulator",
 	"webDir": "dist",
 	"server": {
 		"iosScheme": "app"
