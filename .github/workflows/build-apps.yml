@@ -3,7 +3,7 @@ name: Build apps
 on:
   workflow_dispatch:
   push:
-    branches: [master, ios-local-app]
+    branches: [master]
 
 permissions:
   contents: read
@@ -22,10 +22,11 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm run build
+      - run: cd dist && zip -qr ../DB-Simulator-web.zip .
       - uses: actions/upload-artifact@v4
         with:
           name: DB-Simulator-web
-          path: dist/
+          path: DB-Simulator-web.zip
           if-no-files-found: error
   android:
     runs-on: ubuntu-latest
@@ -43,6 +44,9 @@ jobs:
           distribution: temurin
           java-version: 21
       - uses: android-actions/setup-android@v3
+        with:
+          packages: platform-tools
+          log-accepted-android-sdk-licenses: false
       - run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
       - run: pnpm install --frozen-lockfile
       - run: pnpm run android:apk
@@ -69,3 +73,28 @@ jobs:
           name: DB-Simulator-iOS-unsigned
           path: artifacts/DB-Simulator-unsigned.ipa
           if-no-files-found: error
+  release:
+    needs: [web, android, ios]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: release
+          merge-multiple: true
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          BUILD_NUMBER: ${{ github.run_number }}
+          BUILD_SHA: ${{ github.sha }}
+        run: |
+          mv release/app-debug.apk release/DB-Simulator-debug.apk
+          gh release create "build-${BUILD_NUMBER}" \
+            release/DB-Simulator-web.zip \
+            release/DB-Simulator-debug.apk \
+            release/DB-Simulator-unsigned.ipa \
+            --target "$BUILD_SHA" \
+            --title "DB Simulator — Build ${BUILD_NUMBER}" \
+            --notes 'Web build, Android debug APK and unsigned iOS IPA. The IPA requires signing before installation on an iPhone.'
